@@ -15,7 +15,8 @@ struct SetupView: View {
     @State private var length: Length = .minutes(25)
     @State private var showMore = false
     @State private var criteria = ""
-    @State private var plansText = ""
+    @State private var plans: [String] = []
+    @State private var newPlan = ""
     @State private var breakMinutes = 5
     @State private var noise = false
     @State private var phoneAway = false
@@ -49,6 +50,8 @@ struct SetupView: View {
             .pickerStyle(.segmented)
             .labelsHidden()
 
+            ifThenSection
+
             if let rec = state.recommendedBlockMinutes {
                 Text("あなたの記録からのおすすめは \(rec)分")
                     .font(.caption)
@@ -66,15 +69,17 @@ struct SetupView: View {
                 Spacer()
                 Button("キャンセル") { WindowManager.shared.closeSetup() }
                     .keyboardShortcut(.cancelAction)
+                // No default-key binding: Enter in the task field starts (onSubmit), and Enter in the
+                // "add plan" field must only add a plan, never start the session by accident.
                 Button("Lock in ⚡") { start() }
-                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
                     .tint(RokkinTheme.pink)
                     .controlSize(.large)
             }
 
             if showMore { moreSettings }
 
-            Text("Enter でスタート ・ ⌃⌥L でいつでもこの画面")
+            Text("作業名の欄で Enter を押すとスタート ・ ⌃⌥L でいつでもこの画面")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -83,7 +88,7 @@ struct SetupView: View {
         .onAppear {
             if !loaded {
                 loaded = true
-                plansText = state.settings.defaultIfThen.joined(separator: "\n")
+                plans = state.settings.defaultIfThen
                 breakMinutes = state.settings.breakMinutes
                 noise = state.settings.noiseByDefault
                 length = state.settings.pomodoroMode ? .pomodoro : .minutes(state.settings.blockMinutes)
@@ -95,20 +100,54 @@ struct SetupView: View {
         }
     }
 
+    /// If-then plans are visible from the start (defaults included) so they work without any typing.
+    private var ifThenSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("脱線しそうになったら（if-then プラン）")
+                .font(.callout.weight(.semibold))
+            ForEach(Array(plans.enumerated()), id: \.offset) { index, plan in
+                HStack(spacing: 8) {
+                    Text("⚡").foregroundStyle(RokkinTheme.bolt)
+                    Text(plan)
+                        .font(.callout)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 4)
+                    Button {
+                        plans.remove(at: index)
+                    } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("このプランを外す")
+                }
+                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .background(RoundedRectangle(cornerRadius: 8).fill(Color.primary.opacity(0.05)))
+            }
+            HStack(spacing: 8) {
+                TextField("＋ 追加する（例：Slackを開きたくなったら → 通知だけ見て閉じる）", text: $newPlan)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.callout)
+                    .onSubmit { addPlan() }
+                Button("追加") { addPlan() }
+                    .disabled(newPlan.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+    }
+
+    private func addPlan() {
+        let text = newPlan.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        plans.append(text)
+        newPlan = ""
+    }
+
     private var moreSettings: some View {
         VStack(alignment: .leading, spacing: 12) {
             field("完了の定義（どうなったら終わり？）") {
                 TextField("例：全セクションが埋まって、送信できる状態", text: $criteria)
                     .textFieldStyle(.roundedBorder)
-            }
-            field("if-then プラン（最初から入っています。書き換えもOK）") {
-                TextEditor(text: $plansText)
-                    .font(.body)
-                    .scrollContentBackground(.hidden)
-                    .padding(4)
-                    .frame(height: 76)
-                    .background(RoundedRectangle(cornerRadius: 6).fill(Color(nsColor: .textBackgroundColor)))
-                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.3)))
             }
             if length != .pomodoro {
                 Stepper(value: $breakMinutes, in: 1...20) { Text("休憩 \(breakMinutes)分") }
@@ -129,12 +168,6 @@ struct SetupView: View {
         }
     }
 
-    private func lines(_ text: String) -> [String] {
-        text.components(separatedBy: .newlines)
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-    }
-
     private func start() {
         let name = task.trimmingCharacters(in: .whitespacesAndNewlines)
         let pomodoro = length == .pomodoro
@@ -144,7 +177,7 @@ struct SetupView: View {
             task: name.isEmpty ? "いまの作業" : name,
             criteria: criteria.trimmingCharacters(in: .whitespacesAndNewlines),
             steps: [],
-            plans: lines(plansText),
+            plans: plans,
             blockMinutes: block,
             breakMinutes: pomodoro ? 5 : breakMinutes,
             noise: noise,
