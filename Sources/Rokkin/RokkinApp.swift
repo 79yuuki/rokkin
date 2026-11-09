@@ -54,7 +54,6 @@ struct MenuContent: View {
         }
         Divider()
         Button("駐車場メモ  ⌃⌥M") { state.openCapture(.parking) }
-        Button("観察メモ  ⌃⌥O") { state.openCapture(.observation) }
         Button("HUDの表示切替  ⌃⌥H") { state.toggleHUD() }
         Button(state.noisePlaying ? "ノイズを止める" : "ノイズを流す") { state.toggleNoise() }
         Divider()

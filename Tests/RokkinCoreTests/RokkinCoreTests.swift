@@ -209,7 +209,8 @@ final class PersistenceTests: XCTestCase {
         s.notes = [Note(text: "トースト文言", kind: .observation), Note(text: "Vitest調べる", kind: .parking)]
         let md = s.markdownReport()
         XCTAssertTrue(md.contains("# 決済QA"))
-        XCTAssertTrue(md.contains("## 観察メモ（QA）"))
+        XCTAssertTrue(md.contains("## 観察メモ"))
+        XCTAssertTrue(md.contains("## メモ"))
         XCTAssertTrue(md.contains("- [ ] Vitest調べる"))
     }
 }

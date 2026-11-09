@@ -48,7 +48,6 @@ final class HotKeyCenter {
     func registerDefaults() {
         let mods = controlKey | optionKey
         register(keyCode: kVK_ANSI_M, modifiers: mods, id: 1) { Task { @MainActor in AppState.shared.openCapture(.parking) } }
-        register(keyCode: kVK_ANSI_O, modifiers: mods, id: 2) { Task { @MainActor in AppState.shared.openCapture(.observation) } }
         register(keyCode: kVK_ANSI_Y, modifiers: mods, id: 3) { Task { @MainActor in AppState.shared.answerCheckIn(onTask: true) } }
         register(keyCode: kVK_ANSI_N, modifiers: mods, id: 4) { Task { @MainActor in AppState.shared.answerCheckIn(onTask: false) } }
         register(keyCode: kVK_ANSI_H, modifiers: mods, id: 5) { Task { @MainActor in AppState.shared.toggleHUD() } }

@@ -36,13 +36,13 @@ extension SessionRecord {
         let obs = notesMarkdown(kind: .observation)
         if !obs.isEmpty {
             out.append("")
-            out.append("## 観察メモ（QA）")
+            out.append("## 観察メモ")
             out.append(obs)
         }
         let parking = notesMarkdown(kind: .parking)
         if !parking.isEmpty {
             out.append("")
-            out.append("## 駐車場メモ")
+            out.append("## メモ")
             out.append(parking)
         }
         if !reflection.isEmpty {

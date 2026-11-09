@@ -72,8 +72,11 @@ struct ReviewView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 } label: { Text("記録") }
 
-                notesBox(s, kind: .observation, title: "観察メモ（QA）")
-                notesBox(s, kind: .parking, title: "駐車場メモ")
+                if s.notes.contains(where: { $0.kind == .observation }) {
+                    // sessions recorded before the memos were merged
+                    notesBox(s, kind: .observation, title: "観察メモ")
+                }
+                notesBox(s, kind: .parking, title: "メモ")
 
                 GroupBox {
                     TextEditor(text: $reflection)

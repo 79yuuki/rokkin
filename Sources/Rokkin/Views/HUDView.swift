@@ -202,7 +202,7 @@ struct HUDView: View {
                 Text("👀 \(state.observationPrompt)")
                     .font(.callout)
                     .fixedSize(horizontal: false, vertical: true)
-                Button("気づいたことを観察メモ  ⌃⌥O") { state.openCapture(.observation) }
+                Button("気づいたことをメモ  ⌃⌥M") { state.openCapture(.parking) }
                     .controlSize(.small)
             }
             if attention {
@@ -221,10 +221,6 @@ struct HUDView: View {
                 Label("メモ", systemImage: "tray.and.arrow.down")
             }
             .help("駐車場メモ ⌃⌥M")
-            Button { state.openCapture(.observation) } label: {
-                Label("観察", systemImage: "eye")
-            }
-            .help("観察メモ ⌃⌥O")
             Spacer()
             if let s = state.session, let p = s.pomodoroProgress(completedBlocks: completedBlocks(s)) {
                 Text(String(repeating: "🍅", count: p.done) + String(repeating: "・", count: max(0, p.of - p.done)))
