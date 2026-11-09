@@ -32,11 +32,11 @@ struct SetupView: View {
                 }
 
                 field("今からやる、ひとつの作業") {
-                    TextField("例：決済フローのQA（Claudeにブラウザ操作させて確認）", text: $task)
+                    TextField("例：週次レポートを書き上げる", text: $task)
                         .textFieldStyle(.roundedBorder)
                 }
                 field("完了の定義 — どうなったら終わり？") {
-                    TextField("例：QAシートのケース1〜12が全部 OK / NG 判定済み", text: $criteria)
+                    TextField("例：全セクションが埋まって、送信できる状態になっている", text: $criteria)
                         .textFieldStyle(.roundedBorder)
                 }
                 field("手順・QAケース（1行に1つ。任意）") {
