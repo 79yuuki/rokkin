@@ -54,7 +54,7 @@ struct MenuContent: View {
         }
         Divider()
         Button("駐車場メモ  ⌃⌥M") { state.openCapture(.parking) }
-        Button("HUDの表示切替  ⌃⌥H") { state.toggleHUD() }
+        Button(state.hudVisible ? "小窓を隠す  ⌃⌥H" : "小窓を表示  ⌃⌥H") { state.toggleHUD() }
         Button(state.noisePlaying ? "ノイズを止める" : "ノイズを流す") { state.toggleNoise() }
         Divider()
         Button("記録…") { WindowManager.shared.showHistory() }

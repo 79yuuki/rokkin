@@ -76,7 +76,7 @@ hooks は `~/.rokkin/claude-events` に状態（running / waiting / stop）を1�
 | <kbd>⌃⌥L</kbd> | 開始画面（Lock in） |
 | <kbd>⌃⌥M</kbd> | メモ（後で見る・気づいたこと） |
 | <kbd>⌃⌥Y</kbd> / <kbd>⌃⌥N</kbd> | 自己チェックに はい / いいえ |
-| <kbd>⌃⌥H</kbd> | 小窓の表示切替 |
+| <kbd>⌃⌥H</kbd> | 小窓の表示切替（小窓は × でも閉じられます） |
 
 ### 設定のヒント
 

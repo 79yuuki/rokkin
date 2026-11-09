@@ -137,7 +137,7 @@ struct ClaudeSettingsTab: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Claude Code の状態をHUDに表示する", isOn: $state.settings.claudeIntegration)
+                Toggle("Claude Code の状態を小窓に表示する", isOn: $state.settings.claudeIntegration)
                 Toggle("完了・入力待ちで音を鳴らす", isOn: $state.settings.claudeSound)
                 Stepper(value: $state.settings.observationPromptSeconds, in: 30...300, step: 15) {
                     Text("観察プロンプトを \(Int(state.settings.observationPromptSeconds))秒ごとに切り替え")

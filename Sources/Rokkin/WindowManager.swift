@@ -31,9 +31,13 @@ final class WindowManager: NSObject, NSWindowDelegate {
         if hud == nil { hud = makeHUD() }
         refreshHUDSize()
         hud?.orderFrontRegardless()
+        AppState.shared.noteHUDVisibility(true)
     }
 
-    func hideHUD() { hud?.orderOut(nil) }
+    func hideHUD() {
+        hud?.orderOut(nil)
+        AppState.shared.noteHUDVisibility(false)
+    }
 
     private func makeHUD() -> KeyablePanel {
         let panel = KeyablePanel(

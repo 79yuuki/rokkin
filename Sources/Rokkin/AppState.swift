@@ -41,6 +41,7 @@ final class AppState: ObservableObject {
     @Published private(set) var frictionTarget: String?
     @Published private(set) var reviewingID: UUID?
     @Published private(set) var lastBreakWasLong = false
+    @Published private(set) var hudVisible = false
 
     private var blockOverAt: Date?
     private var flashUntil: Date?
@@ -592,6 +593,14 @@ final class AppState: ObservableObject {
 
     func showHUD() {
         WindowManager.shared.showHUD()
+    }
+
+    /// The small window closes with its × button; it comes back by itself only when it needs
+    /// the user (check-in, block end, Claude finished) or from the menu bar.
+    func closeHUD() { WindowManager.shared.hideHUD() }
+
+    func noteHUDVisibility(_ visible: Bool) {
+        if hudVisible != visible { hudVisible = visible }
     }
 
     func toggleHUD() {

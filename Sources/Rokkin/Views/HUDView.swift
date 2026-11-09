@@ -66,6 +66,21 @@ struct HUDView: View {
 
     private var header: some View {
         HStack(spacing: 8) {
+            dragHeader
+            Button { state.closeHUD() } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help("閉じる（自己チェックや完了のときは、また出てきます）")
+            .accessibilityLabel("小窓を閉じる")
+        }
+    }
+
+    /// Everything in the header except the close button can be dragged to move the window.
+    private var dragHeader: some View {
+        HStack(spacing: 8) {
             Circle().fill(phaseColor).frame(width: 9, height: 9)
             Text(state.session?.task ?? "Rokkin")
                 .font(.headline)
@@ -242,7 +257,7 @@ struct HUDView: View {
                 }
                 Divider()
                 Button(state.noisePlaying ? "ノイズを止める" : "ノイズを流す") { state.toggleNoise() }
-                Button("HUDを隠す（⌃⌥H で再表示）") { state.toggleHUD() }
+                Button("小窓を閉じる") { state.closeHUD() }
             } label: {
                 Image(systemName: "ellipsis.circle")
             }
