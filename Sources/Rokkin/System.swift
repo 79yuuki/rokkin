@@ -52,6 +52,7 @@ final class HotKeyCenter {
         register(keyCode: kVK_ANSI_Y, modifiers: mods, id: 3) { Task { @MainActor in AppState.shared.answerCheckIn(onTask: true) } }
         register(keyCode: kVK_ANSI_N, modifiers: mods, id: 4) { Task { @MainActor in AppState.shared.answerCheckIn(onTask: false) } }
         register(keyCode: kVK_ANSI_H, modifiers: mods, id: 5) { Task { @MainActor in AppState.shared.toggleHUD() } }
+        register(keyCode: kVK_ANSI_L, modifiers: mods, id: 6) { Task { @MainActor in AppState.shared.openSetup() } }
     }
 }
 

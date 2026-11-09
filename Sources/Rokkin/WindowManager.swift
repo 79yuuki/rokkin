@@ -142,6 +142,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
 
     private func makeWindow<Content: View>(title: String, content: Content) -> NSWindow {
         let host = NSHostingController(rootView: content.environmentObject(AppState.shared))
+        host.sizingOptions = [.preferredContentSize]
         let w = NSWindow(contentViewController: host)
         w.title = title
         w.styleMask = [.titled, .closable, .miniaturizable]

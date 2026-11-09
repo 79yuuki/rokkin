@@ -29,7 +29,7 @@ struct SettingsView: View {
                 }
             }
             Section("お祝い") {
-                Toggle("ブロッククリア・全ケースクリアで紙吹雪を出す", isOn: $state.settings.celebrations)
+                Toggle("ブロッククリアで紙吹雪を出す", isOn: $state.settings.celebrations)
                 Text("終わった瞬間にだけ出ます。集中している最中には出しません。")
                     .font(.caption)
                     .foregroundStyle(.secondary)

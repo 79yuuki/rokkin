@@ -50,7 +50,7 @@ struct MenuContent: View {
             }
             Button("セッションを終了してリザルトへ") { state.endSession() }
         } else {
-            Button("新しいセッションを始める…") { state.openSetup() }
+            Button("新しいセッションを始める…  ⌃⌥L") { state.openSetup() }
         }
         Divider()
         Button("駐車場メモ  ⌃⌥M") { state.openCapture(.parking) }

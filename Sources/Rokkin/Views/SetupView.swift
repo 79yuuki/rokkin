@@ -1,125 +1,131 @@
 import RokkinCore
 import SwiftUI
 
-/// The starting ritual: one task, a concrete finish line, and if-then plans for the known traps.
+/// Quick start: one line and Enter. Everything else is optional and tucked away,
+/// because the hardest part for ADHD is getting started at all.
 struct SetupView: View {
     @EnvironmentObject var state: AppState
 
-    @State private var task = ""
-    @State private var criteria = ""
-    @State private var stepsText = ""
-    @State private var plansText = ""
-    @State private var blockMinutes = 25
-    @State private var breakMinutes = 5
-    @State private var phoneAway = false
-    @State private var tabsClosed = false
-    @State private var noise = false
-    @State private var pomodoro = false
-    @State private var loaded = false
+    enum Length: Hashable {
+        case minutes(Int)
+        case pomodoro
+    }
 
-    private var canStart: Bool { !task.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    @State private var task = ""
+    @State private var length: Length = .minutes(25)
+    @State private var showMore = false
+    @State private var criteria = ""
+    @State private var plansText = ""
+    @State private var breakMinutes = 5
+    @State private var noise = false
+    @State private var phoneAway = false
+    @State private var loaded = false
+    @FocusState private var focused: Bool
+
+    private var options: [Length] {
+        var mins = [15, 25, 45]
+        if let rec = state.recommendedBlockMinutes { mins.append(rec) }
+        mins.append(state.settings.blockMinutes)
+        return Array(Set(mins)).sorted().map { .minutes($0) } + [.pomodoro]
+    }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("ひとつ決めて、Lock in ⚡")
-                        .font(.system(size: 26, weight: .heavy, design: .rounded))
-                        .foregroundStyle(RokkinTheme.gradient)
-                    Text("やることを1つに絞って、終わりの形を決めたら、あとはロックインするだけ。")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
+        VStack(alignment: .leading, spacing: 16) {
+            Text("何に Lock in する？")
+                .font(.system(size: 28, weight: .heavy, design: .rounded))
+                .foregroundStyle(RokkinTheme.gradient)
 
-                field("今からやる、ひとつの作業") {
-                    TextField("例：週次レポートを書き上げる", text: $task)
-                        .textFieldStyle(.roundedBorder)
-                }
-                field("完了の定義 — どうなったら終わり？") {
-                    TextField("例：全セクションが埋まって、送信できる状態になっている", text: $criteria)
-                        .textFieldStyle(.roundedBorder)
-                }
-                field("手順・QAケース（1行に1つ。任意）") {
-                    editor($stepsText, height: 90)
-                }
-                field("if-then プラン（脱線しそうな場面 → そのときやること）") {
-                    editor($plansText, height: 76)
-                }
+            TextField("例：週次レポートを書き上げる（空欄でもOK）", text: $task)
+                .textFieldStyle(.roundedBorder)
+                .font(.title3)
+                .focused($focused)
+                .onSubmit { start() }
 
-                Toggle(isOn: $pomodoro) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("🍅 ポモドーロモード")
-                        Text("25分集中＋5分休憩。\(state.settings.longBreakEvery)回ごとに\(state.settings.longBreakMinutes)分の長い休憩。延長なしで区切りを守る")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .toggleStyle(.switch)
-                .onChange(of: pomodoro) { on in
-                    if on {
-                        blockMinutes = 25
-                        breakMinutes = 5
-                    }
-                }
-
-                HStack(spacing: 24) {
-                    Stepper(value: $blockMinutes, in: 5...90, step: 5) {
-                        Text("作業ブロック \(blockMinutes)分")
-                    }
-                    Stepper(value: $breakMinutes, in: 1...20) {
-                        Text("休憩 \(breakMinutes)分")
-                    }
-                }
-                if let rec = state.recommendedBlockMinutes, rec != blockMinutes {
-                    HStack {
-                        Text("最近の記録では、脱線するまでの時間の中央値から \(rec)分ブロックがおすすめです")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                        Button("\(rec)分にする") { blockMinutes = rec }
-                    }
-                }
-
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Toggle("スマホを視界の外（別の部屋・カバンの中）に置いた", isOn: $phoneAway)
-                        Toggle("今の作業に関係ないタブ・アプリを閉じた", isOn: $tabsClosed)
-                        Toggle("背景ノイズを流す（\(state.settings.noiseColor.label)）", isOn: $noise)
-                        if !state.settings.focusOnShortcut.isEmpty {
-                            Text("開始時にショートカット「\(state.settings.focusOnShortcut)」を実行します")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } label: {
-                    Label("環境を整える", systemImage: "leaf")
-                }
-
-                HStack {
-                    Text("⌃⌥M 駐車場メモ ・ ⌃⌥O 観察メモ ・ ⌃⌥Y/N 自己チェック ・ ⌃⌥H HUD")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Button("キャンセル") { WindowManager.shared.closeSetup() }
-                        .keyboardShortcut(.cancelAction)
-                    Button("Lock in ⚡") { start() }
-                        .keyboardShortcut(.defaultAction)
-                        .tint(RokkinTheme.pink)
-                        .controlSize(.large)
-                        .disabled(!canStart)
+            Picker("", selection: $length) {
+                ForEach(options, id: \.self) { option in
+                    Text(label(option)).tag(option)
                 }
             }
-            .padding(24)
+            .pickerStyle(.segmented)
+            .labelsHidden()
+
+            if let rec = state.recommendedBlockMinutes {
+                Text("あなたの記録からのおすすめは \(rec)分")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if state.session != nil {
+                Text("始めると、いまのセッションは終了してリザルトに記録されます")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
+
+            HStack {
+                Button(showMore ? "設定を閉じる" : "もっと設定する（任意）") { showMore.toggle() }
+                    .buttonStyle(.link)
+                Spacer()
+                Button("キャンセル") { WindowManager.shared.closeSetup() }
+                    .keyboardShortcut(.cancelAction)
+                Button("Lock in ⚡") { start() }
+                    .keyboardShortcut(.defaultAction)
+                    .tint(RokkinTheme.pink)
+                    .controlSize(.large)
+            }
+
+            if showMore { moreSettings }
+
+            Text("Enter でスタート ・ ⌃⌥L でいつでもこの画面")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
-        .frame(width: 600, height: 700)
+        .padding(24)
+        .frame(width: 560)
         .onAppear {
-            guard !loaded else { return }
-            loaded = true
-            plansText = state.settings.defaultIfThen.joined(separator: "\n")
-            blockMinutes = state.settings.blockMinutes
-            breakMinutes = state.settings.breakMinutes
-            noise = state.settings.noiseByDefault
-            pomodoro = state.settings.pomodoroMode
+            if !loaded {
+                loaded = true
+                plansText = state.settings.defaultIfThen.joined(separator: "\n")
+                breakMinutes = state.settings.breakMinutes
+                noise = state.settings.noiseByDefault
+                length = state.settings.pomodoroMode ? .pomodoro : .minutes(state.settings.blockMinutes)
+            }
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 150_000_000)
+                focused = true
+            }
+        }
+    }
+
+    private var moreSettings: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            field("完了の定義（どうなったら終わり？）") {
+                TextField("例：全セクションが埋まって、送信できる状態", text: $criteria)
+                    .textFieldStyle(.roundedBorder)
+            }
+            field("if-then プラン（最初から入っています。書き換えもOK）") {
+                TextEditor(text: $plansText)
+                    .font(.body)
+                    .scrollContentBackground(.hidden)
+                    .padding(4)
+                    .frame(height: 76)
+                    .background(RoundedRectangle(cornerRadius: 6).fill(Color(nsColor: .textBackgroundColor)))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.3)))
+            }
+            if length != .pomodoro {
+                Stepper(value: $breakMinutes, in: 1...20) { Text("休憩 \(breakMinutes)分") }
+            }
+            Toggle("背景ノイズを流す（\(state.settings.noiseColor.label)）", isOn: $noise)
+            Toggle("スマホを視界の外に置いた", isOn: $phoneAway)
+        }
+        .padding(14)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.primary.opacity(0.05)))
+    }
+
+    private func label(_ option: Length) -> String {
+        switch option {
+        case .minutes(let m):
+            return state.recommendedBlockMinutes == m ? "\(m)分 ★" : "\(m)分"
+        case .pomodoro:
+            return "🍅 ポモドーロ"
         }
     }
 
@@ -130,14 +136,17 @@ struct SetupView: View {
     }
 
     private func start() {
-        guard canStart else { return }
+        let name = task.trimmingCharacters(in: .whitespacesAndNewlines)
+        let pomodoro = length == .pomodoro
+        var block = 25
+        if case .minutes(let m) = length { block = m }
         state.startSession(
-            task: task.trimmingCharacters(in: .whitespacesAndNewlines),
+            task: name.isEmpty ? "いまの作業" : name,
             criteria: criteria.trimmingCharacters(in: .whitespacesAndNewlines),
-            steps: lines(stepsText),
+            steps: [],
             plans: lines(plansText),
-            blockMinutes: blockMinutes,
-            breakMinutes: breakMinutes,
+            blockMinutes: block,
+            breakMinutes: pomodoro ? 5 : breakMinutes,
             noise: noise,
             pomodoro: pomodoro
         )
@@ -145,18 +154,8 @@ struct SetupView: View {
 
     private func field<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.headline)
+            Text(title).font(.callout.weight(.semibold))
             content()
         }
-    }
-
-    private func editor(_ text: Binding<String>, height: CGFloat) -> some View {
-        TextEditor(text: text)
-            .font(.body)
-            .scrollContentBackground(.hidden)
-            .padding(4)
-            .frame(height: height)
-            .background(RoundedRectangle(cornerRadius: 6).fill(Color(nsColor: .textBackgroundColor)))
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.3)))
     }
 }
