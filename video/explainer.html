@@ -62,14 +62,28 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
 .ticker { position: absolute; left: 0; right: 0; bottom: 34px; height: 62px; background: var(--grad); transform: rotate(-1.2deg); overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
 .ticker .track { position: absolute; top: 0; left: 0; white-space: nowrap; font-family: "Dela Gothic One", sans-serif; font-size: 34px; line-height: 62px; color: #12062a; }
 
+/* quick start mock */
+.qs { width: 700px; padding: 32px 34px; }
+.qs h3 { margin: 0 0 18px; font-size: 44px; }
+.qs .input { min-height: 64px; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.09); border: 2px solid rgba(24,200,255,0.55); font-size: 30px; font-weight: 800; }
+.seg { display: flex; margin: 18px 0 20px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.18); }
+.seg span { flex: 1; white-space: nowrap; text-align: center; padding: 10px 0; font-size: 22px; font-weight: 800; color: var(--muted); border-right: 1px solid rgba(255,255,255,0.12); }
+.seg span:last-child { border-right: 0; flex: 1.8; }
+.seg span.on { background: var(--pink); color: #fff; }
+.qs .lbl { font-size: 22px; font-weight: 800; color: var(--muted); margin-bottom: 8px; }
+.plan { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,0.06); font-size: 23px; }
+.plan .x { margin-left: auto; color: var(--muted); font-size: 22px; }
+.plan.add { border: 1px dashed rgba(255,255,255,0.25); background: transparent; color: var(--muted); }
+.hud .close { flex: none; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.18); color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+
 /* mock UI pieces */
 .hud { width: 640px; padding: 24px 28px 22px; border-radius: 26px; }
 .hud .cap { height: 6px; border-radius: 3px; background: var(--grad); margin-bottom: 16px; }
 .hud .row { display: flex; align-items: center; gap: 12px; }
 .hud .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); flex: none; }
-.hud .task { font-size: 32px; font-weight: 800; flex: 1; }
-.hud .badge { font-size: 22px; font-weight: 800; padding: 2px 12px; border-radius: 999px; background: rgba(255,58,157,0.3); }
-.hud .timer { font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.hud .task { font-size: 24px; font-weight: 800; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud .badge { flex: none; white-space: nowrap; font-size: 22px; font-weight: 800; padding: 2px 12px; border-radius: 999px; background: rgba(255,58,157,0.3); }
+.hud .timer { flex: none; font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .hud .step { margin-top: 14px; font-size: 26px; display: flex; gap: 10px; align-items: center; }
 .hud .step .count { margin-left: auto; color: var(--muted); font-size: 22px; }
 .hud .box { margin-top: 16px; padding: 18px 20px; border-radius: 16px; background: rgba(155, 92, 255, 0.24); }
@@ -163,15 +177,18 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
 <!-- features: 4 bars each -->
 <section class="scene feature" id="f1">
   <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 01</div>
-  <h2 class="ftitle display" data-slam="0.10">始める前に、<br>決めろ。</h2>
-  <div class="fsub" data-at="0.45">やること1つ・ゴール・if-then プラン。<br>迷う場面を先につぶす。</div>
+  <h2 class="ftitle display" data-slam="0.10">1行書いたら、<br>即 Lock in。</h2>
+  <div class="fsub" data-at="0.45">if-then プランは最初から入ってる。<br>迷う場面を先につぶす。</div>
   <div class="right" data-at="0.43" data-dx="120">
-    <div class="setup glass">
-      <h3 class="display grad">ひとつ決めて、Lock in <span class="emoji">⚡</span></h3>
-      <div class="field"><div class="k">今からやる、ひとつの作業</div><div class="v" data-type="0.7" data-text="決済フローのQA"></div></div>
-      <div class="field"><div class="k">完了の定義</div><div class="v" data-type="1.4" data-text="12ケースすべて OK / NG 判定"></div></div>
-      <div class="field"><div class="k">if-then プラン</div><div class="v" data-type="2.3" data-text="調べたくなったら → ⌃⌥M でメモして戻る"></div></div>
-      <div style="text-align:right;margin-top:10px"><span class="btn hot" id="f1btn">Lock in <span class="emoji">⚡</span></span></div>
+    <div class="qs glass">
+      <h3 class="display grad">何に Lock in する？</h3>
+      <div class="input" data-type="0.7" data-text="ログイン機能のリファクタ"></div>
+      <div class="seg"><span>15分</span><span class="on">25分</span><span>45分</span><span><span class="emoji">🍅</span> ポモドーロ</span></div>
+      <div class="lbl">脱線しそうになったら（if-then プラン）</div>
+      <div class="plan"><span class="emoji">⚡</span>調べたくなったら → ⌃⌥M でメモして戻る<span class="x">✕</span></div>
+      <div class="plan"><span class="emoji">⚡</span>スマホに手が伸びたら → 置き場所に戻す<span class="x">✕</span></div>
+      <div class="plan add">＋ 追加する</div>
+      <div style="text-align:right;margin-top:14px"><span class="btn hot" id="f1btn">Lock in <span class="emoji">⚡</span></span></div>
     </div>
   </div>
   <div class="sticker"><div class="big" data-pop="3.43">d=0.65</div><div class="lab" data-at="3.62"><b>if-then プランの効果量</b><small>94研究のメタ分析。ADHDの子どもでも衝動の抑制が改善<br>Gollwitzer &amp; Sheeran 2006 / Gawrilow 2008</small></div></div>
@@ -184,8 +201,7 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
   <div class="right" data-at="0.43" data-dx="120">
     <div class="hud glass">
       <div class="cap"></div>
-      <div class="row"><div class="dot"></div><div class="task">決済フローのQA</div><span class="badge" id="f2badge">🔥2</span><div class="timer" id="f2timer">18:42</div></div>
-      <div class="step">○ ケース4：クーポン適用後の金額<span class="count">4/12</span></div>
+      <div class="row"><div class="dot"></div><div class="task">ログイン機能のリファクタ</div><span class="badge" id="f2badge">🔥2</span><div class="timer" id="f2timer">18:42</div><span class="close">✕</span></div>
       <div class="box" id="f2box"><div class="q">今、この作業に注意が向いてた？</div><span class="btn" id="f2yes">はい ⌃⌥Y</span><span class="btn">いいえ ⌃⌥N</span></div>
       <div class="flashmsg" id="f2flash"><span class="emoji">🔥</span> 3コンボ！ 集中キープ</div>
     </div>
@@ -218,7 +234,7 @@ html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; backgro
     <div class="friction glass">
       <h3 class="display">ひと呼吸おこう</h3>
       <div class="src">「youtube.com」を開いています</div>
-      <div class="goal">今やると決めたのは<b>決済フローのQA</b></div>
+      <div class="goal">今やると決めたのは<b>ログイン機能のリファクタ</b></div>
       <div class="ring"><svg width="170" height="170"><circle cx="85" cy="85" r="72" stroke="rgba(255,255,255,0.15)" stroke-width="12" fill="none"/><circle id="f4ring" cx="85" cy="85" r="72" stroke="#FF3A9D" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="452.4" stroke-dashoffset="0"/></svg><div class="n" id="f4n">5</div></div>
       <div><span class="btn" id="f4back">作業に戻る</span><span class="btn">メモして戻る</span><span class="btn off" id="f4allow">5分だけ使う</span></div>
     </div>
@@ -378,8 +394,8 @@ const custom = {
   f1(lt, s) {
     s.el.querySelectorAll('[data-type]').forEach(v => typeInto(v, lt, +v.dataset.type, 24));
     const b = document.getElementById('f1btn');
-    const on = lt > 3.1;
-    b.style.transform = `scale(${on ? 1 + 0.1 * Math.exp(-(lt - 3.1) * 5) : 1})`;
+    const on = lt > 2.0;
+    b.style.transform = `scale(${on ? 1 + 0.1 * Math.exp(-(lt - 2.0) * 5) : 1})`;
     b.style.opacity = on ? 1 : 0.4;
   },
   f2(lt) {
@@ -415,15 +431,15 @@ const custom = {
     document.getElementById('f4back').className = 'btn' + (lt > 3.2 ? ' hot' : '');
   },
   f5(lt) {
-    const lines = ['<span class="p">claude</span> &gt; QAケース4〜6をブラウザで確認して', '● ケース4：クーポン適用を確認中…', '  ↳ クリック #apply-coupon', '  ↳ スクリーンショットを保存', '● ケース5：金額表示を確認中…'];
+    const lines = ['<span class="p">claude</span> &gt; ログイン処理をリファクタして、テストも直して', '● src/auth/session.ts を編集中…', '  ↳ 期限切れトークンの分岐を追加', '  ↳ npm test を実行', '● テスト 38/40 通過、残り2件を修正中…'];
     const shown = clamp(Math.floor((lt - 0.5) / 0.42) + 1, 0, lines.length);
     const done = lt > 4.6;
     document.getElementById('f5term').innerHTML = lines.slice(0, shown).join('<br>') + (done ? '<br>✓ 完了' : '<br><span class="caret"></span>');
     const sec = 2 * 60 + 14 + Math.floor(lt * 3);
     document.getElementById('f5time').textContent = done ? '00:01' : `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
     document.getElementById('f5icon').textContent = done ? '✅' : '⚙️';
-    document.getElementById('f5title').textContent = done ? 'Claude 完了！ 結果を見よう' : 'Claude 実行中';
-    const prompts = ['今の操作、QAケースの手順と一致してる？', '次に Claude が何をするか予想してみよう'];
+    document.getElementById('f5title').textContent = done ? 'Claude 完了！ 差分を見よう' : 'Claude 実行中';
+    const prompts = ['Claude は今どの手順をやってる？', '次に Claude が何をするか予想してみよう'];
     const pr = document.getElementById('f5prompt');
     pr.innerHTML = done ? '<span class="emoji">🔔</span> ピンポン！ 画面に戻ろう' : '<span class="emoji">👀</span> ' + prompts[lt < 2.6 ? 0 : 1];
     const box = document.getElementById('f5box');
