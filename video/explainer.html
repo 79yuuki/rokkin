@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Rokkin explainer (hype cut)</title>
+<style>
+@font-face { font-family: "Dela Gothic One"; src: url(fonts/dela-gothic-one-japanese-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Dela Gothic One"; src: url(fonts/dela-gothic-one-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF; }
+@font-face { font-family: "Rounded"; font-weight: 400; src: url(fonts/m-plus-rounded-1c-japanese-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Rounded"; font-weight: 400; src: url(fonts/m-plus-rounded-1c-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF; }
+@font-face { font-family: "Rounded"; font-weight: 800; src: url(fonts/m-plus-rounded-1c-japanese-800-normal.woff2) format("woff2"); }
+@font-face { font-family: "Rounded"; font-weight: 800; src: url(fonts/m-plus-rounded-1c-latin-800-normal.woff2) format("woff2"); unicode-range: U+0000-00FF; }
+:root {
+  --pink: #FF3A9D; --violet: #9B5CFF; --cyan: #18C8FF; --bolt: #FFD200; --ink: #0A0620;
+  --text: #F7F3FF; --muted: #C3B8E6; --glass: rgba(18, 11, 40, 0.80); --line: rgba(255,255,255,0.16);
+  --grad: linear-gradient(90deg, #FF3A9D, #A05CFF 50%, #18C8FF);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #07041a; color: var(--text);
+  font-family: "Rounded", "Noto Sans CJK JP", sans-serif; -webkit-font-smoothing: antialiased; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+#scrim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(7,4,26,0.15), rgba(7,4,26,0.62)); }
+#stage { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.scene { position: absolute; inset: 0; opacity: 0; }
+.display { font-family: "Dela Gothic One", "Rounded", sans-serif; font-weight: 400; }
+.grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.glass { background: var(--glass); border: 1px solid var(--line); border-radius: 28px; box-shadow: 0 30px 90px rgba(0,0,0,0.5); backdrop-filter: blur(18px); }
+.emoji { font-family: "Noto Color Emoji"; }
+[data-at], [data-slam], [data-pop] { opacity: 0; will-change: transform, opacity; }
+
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.95), rgba(255,58,157,0.55) 55%, rgba(24,200,255,0.25)); mix-blend-mode: screen; }
+
+/* intro */
+.bigicon { width: 320px; height: 320px; filter: drop-shadow(0 30px 70px rgba(255,58,157,0.5)); }
+.title-xl { font-size: 190px; line-height: 1; margin: 10px 0 6px; }
+.tagline { font-size: 46px; font-weight: 800; }
+
+/* hook + vows: one huge line at a time */
+.mega { position: absolute; left: 0; right: 0; top: 50%; transform-origin: 50% 50%; text-align: center; font-size: 150px; line-height: 1.15; margin-top: -90px; }
+.mega.sm { font-size: 118px; margin-top: -70px; }
+.kicker { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 46px; font-weight: 800; color: var(--muted); }
+.side-sticker { position: absolute; font-size: 130px; }
+
+/* feature */
+.buff { position: absolute; left: 130px; top: 120px; font-size: 40px; padding: 8px 22px; border-radius: 14px; background: var(--grad); color: #12062a; }
+.ftitle { position: absolute; left: 130px; top: 210px; width: 900px; font-size: 104px; line-height: 1.15; margin: 0; transform-origin: 0% 50%; }
+.fsub { position: absolute; left: 134px; top: 480px; width: 860px; font-size: 40px; font-weight: 800; line-height: 1.5; color: var(--text); text-shadow: 0 2px 16px rgba(5,2,20,0.7); }
+.right { position: absolute; left: 1060px; top: 120px; width: 740px; height: 760px; display: flex; align-items: center; justify-content: center; }
+.sticker { position: absolute; left: 130px; top: 634px; width: 880px; opacity: 1 !important; }
+.sticker .big { display: inline-block; transform-origin: 30% 60%; }
+.sticker .big { font-family: "Dela Gothic One", sans-serif; font-size: 132px; line-height: 1; color: #12062a; background: var(--bolt);
+  padding: 18px 34px 22px; border-radius: 28px; box-shadow: 0 16px 0 rgba(0,0,0,0.35), 0 0 60px rgba(255,210,0,0.35); white-space: nowrap; }
+.sticker .lab { margin-top: 26px; width: 860px; }
+.sticker .lab b { display: block; font-size: 32px; line-height: 1.4; text-shadow: 0 2px 14px rgba(5,2,20,0.7); }
+.sticker .lab small { display: block; margin-top: 6px; font-size: 22px; color: var(--muted); line-height: 1.45; text-shadow: 0 2px 10px rgba(5,2,20,0.7); }
+.combo { position: absolute; left: 1060px; top: 44px; font-size: 40px; display: flex; align-items: center; gap: 12px; }
+.combo .x { color: var(--bolt); }
+
+/* ticker */
+.ticker { position: absolute; left: 0; right: 0; bottom: 34px; height: 62px; background: var(--grad); transform: rotate(-1.2deg); overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+.ticker .track { position: absolute; top: 0; left: 0; white-space: nowrap; font-family: "Dela Gothic One", sans-serif; font-size: 34px; line-height: 62px; color: #12062a; }
+
+/* mock UI pieces */
+.hud { width: 640px; padding: 24px 28px 22px; border-radius: 26px; }
+.hud .cap { height: 6px; border-radius: 3px; background: var(--grad); margin-bottom: 16px; }
+.hud .row { display: flex; align-items: center; gap: 12px; }
+.hud .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); flex: none; }
+.hud .task { font-size: 32px; font-weight: 800; flex: 1; }
+.hud .badge { font-size: 22px; font-weight: 800; padding: 2px 12px; border-radius: 999px; background: rgba(255,58,157,0.3); }
+.hud .timer { font-size: 40px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.hud .step { margin-top: 14px; font-size: 26px; display: flex; gap: 10px; align-items: center; }
+.hud .step .count { margin-left: auto; color: var(--muted); font-size: 22px; }
+.hud .box { margin-top: 16px; padding: 18px 20px; border-radius: 16px; background: rgba(155, 92, 255, 0.24); }
+.hud .box .q { font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+.btn { display: inline-block; padding: 12px 22px; margin-right: 10px; border-radius: 14px; font-size: 25px; font-weight: 800;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); }
+.btn.hot { background: var(--pink); border-color: var(--pink); color: #fff; box-shadow: 0 0 34px rgba(255,58,157,0.7); }
+.btn.off { opacity: 0.4; }
+.hud .flashmsg { margin-top: 16px; padding: 16px 20px; border-radius: 14px; background: rgba(255,58,157,0.22); border: 1px solid rgba(255,58,157,0.5); font-size: 30px; font-weight: 800; }
+.setup { width: 700px; padding: 34px 36px; }
+.setup h3 { margin: 0 0 22px; font-size: 42px; }
+.field { margin-bottom: 18px; }
+.field .k { font-size: 22px; color: var(--muted); margin-bottom: 8px; }
+.field .v { min-height: 60px; padding: 13px 18px; border-radius: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); font-size: 27px; font-weight: 800; }
+.caret { display: inline-block; width: 3px; height: 1.05em; background: var(--cyan); vertical-align: -0.15em; margin-left: 2px; }
+.keys { display: flex; gap: 20px; justify-content: center; margin-bottom: 40px; }
+.key { width: 130px; height: 130px; border-radius: 26px; display: flex; align-items: center; justify-content: center; font-size: 62px; font-weight: 800;
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06)); border: 2px solid rgba(255,255,255,0.25); box-shadow: 0 12px 0 rgba(0,0,0,0.35); }
+.capture { width: 700px; padding: 28px 30px; }
+.capture .h { font-size: 30px; font-weight: 800; margin-bottom: 14px; }
+.toast { margin-top: 22px; padding: 18px 22px; border-radius: 16px; background: rgba(24,200,255,0.2); border: 1px solid rgba(24,200,255,0.45); font-size: 28px; font-weight: 800; }
+.friction { width: 700px; padding: 34px; text-align: center; }
+.friction h3 { margin: 0; font-size: 50px; }
+.friction .src { color: var(--muted); font-size: 26px; margin: 10px 0 14px; }
+.friction .goal { font-size: 24px; color: var(--muted); }
+.friction .goal b { display: block; color: var(--text); font-size: 38px; margin-top: 4px; }
+.ring { position: relative; width: 170px; height: 170px; margin: 20px auto; }
+.ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ring .n { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 76px; font-weight: 800; }
+.term { width: 720px; padding: 22px 26px; border-radius: 22px; background: rgba(8, 5, 20, 0.9); border: 1px solid rgba(255,255,255,0.12);
+  font-family: "DejaVu Sans Mono", monospace; font-size: 23px; line-height: 1.7; color: #D3CAF3; min-height: 300px; }
+.term .p { color: var(--cyan); }
+.claudebox { width: 720px; margin-top: 18px; padding: 20px 24px; border-radius: 20px; }
+.timerbig { position: relative; width: 440px; height: 440px; margin: 0 auto; }
+.timerbig svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.timerbig .t { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.timerbig .t b { font-size: 104px; font-variant-numeric: tabular-nums; }
+.tomatoes { font-size: 64px; letter-spacing: 8px; margin-top: 26px; text-align: center; }
+.noise { margin: 22px auto 0; width: 520px; display: flex; align-items: center; gap: 18px; padding: 16px 22px; border-radius: 18px; }
+.noise .bars { display: flex; gap: 6px; align-items: center; height: 54px; }
+.noise .bars i { display: block; width: 9px; border-radius: 5px; background: var(--grad); }
+.chart { width: 720px; padding: 30px 32px; }
+.chart h4 { margin: 0 0 56px; font-size: 32px; }
+.bars { position: relative; height: 250px; display: flex; align-items: flex-end; gap: 14px; border-bottom: 2px solid rgba(255,255,255,0.15); }
+.bars .b { flex: 1; border-radius: 10px 10px 4px 4px; background: linear-gradient(180deg, #FF3A9D, #7B2CFF); }
+.median { position: absolute; top: 0; bottom: 0; width: 4px; background: var(--cyan); box-shadow: 0 0 18px var(--cyan); }
+.median span { position: absolute; top: -44px; left: -70px; font-size: 26px; font-weight: 800; color: var(--cyan); white-space: nowrap; }
+.axis { display: flex; justify-content: space-between; font-size: 20px; color: var(--muted); margin-top: 8px; }
+.reco { margin-top: 22px; padding: 18px 22px; border-radius: 16px; background: rgba(255,58,157,0.2); border: 1px solid rgba(255,58,157,0.5); font-size: 32px; font-weight: 800; }
+.note { font-size: 20px; color: var(--muted); margin-top: 10px; text-align: right; }
+
+.disclaimer { position: absolute; left: 0; right: 0; bottom: 130px; text-align: center; font-size: 26px; color: var(--muted); }
+.url { font-size: 42px; font-weight: 800; margin-top: 26px; padding: 14px 32px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); }
+.progress { position: absolute; left: 0; bottom: 0; height: 8px; background: var(--grad); }
+.brandmark { position: absolute; right: 54px; top: 44px; display: flex; align-items: center; gap: 14px; font-size: 32px; }
+.brandmark img { width: 56px; height: 56px; }
+</style>
+</head>
+<body>
+<canvas id="gl" width="768" height="432"></canvas>
+<div id="scrim"></div>
+<div id="stage">
+
+<!-- intro: 2 bars -->
+<section class="scene" id="intro">
+  <div class="center">
+    <img class="bigicon" id="introIcon" src="icon.png" alt="">
+    <div class="title-xl display grad" data-slam="0.43" data-rot="-4">Rokkin</div>
+    <div class="tagline" data-at="1.0">ADHDの集中を、研究ベースでブーストする Mac アプリ</div>
+  </div>
+</section>
+
+<!-- hook: 4 bars -->
+<section class="scene" id="hook">
+  <div class="kicker" data-at="0.0">Claude の作業待ちのあいだに…</div>
+  <div class="mega display" data-slam="0.10" data-until="1.66">気づいたらスマホ。</div>
+  <div class="mega display" data-slam="1.71" data-until="3.38" data-rot="6">気づいたら動画。</div>
+  <div class="mega display" data-slam="3.43" data-until="5.09" data-rot="-6">気づいたら1時間。</div>
+  <div class="mega sm display grad" data-slam="5.14" data-rot="0" data-from="1.6">それ、意志のせいじゃない。</div>
+  <div class="side-sticker emoji" data-pop="0.25" data-until="1.66" style="left:220px;top:640px">📱</div>
+  <div class="side-sticker emoji" data-pop="1.85" data-until="3.38" style="right:240px;top:640px">▶️</div>
+  <div class="side-sticker emoji" data-pop="3.55" data-until="5.09" style="left:260px;top:620px">⏰</div>
+</section>
+
+<!-- idea: 2 bars -->
+<section class="scene" id="idea">
+  <div class="mega sm display" data-slam="0.05" data-until="1.66" style="margin-top:-60px">根性ゼロでOK。</div>
+  <div class="mega display grad" data-slam="1.71" data-from="2.6" style="margin-top:-90px">仕組みで、秒で戻る。</div>
+</section>
+
+<!-- features: 4 bars each -->
+<section class="scene feature" id="f1">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 01</div>
+  <h2 class="ftitle display" data-slam="0.10">始める前に、<br>決めろ。</h2>
+  <div class="fsub" data-at="0.45">やること1つ・ゴール・if-then プラン。<br>迷う場面を先につぶす。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div class="setup glass">
+      <h3 class="display grad">ひとつ決めて、Lock in <span class="emoji">⚡</span></h3>
+      <div class="field"><div class="k">今からやる、ひとつの作業</div><div class="v" data-type="0.7" data-text="決済フローのQA"></div></div>
+      <div class="field"><div class="k">完了の定義</div><div class="v" data-type="1.4" data-text="12ケースすべて OK / NG 判定"></div></div>
+      <div class="field"><div class="k">if-then プラン</div><div class="v" data-type="2.3" data-text="調べたくなったら → ⌃⌥M でメモして戻る"></div></div>
+      <div style="text-align:right;margin-top:10px"><span class="btn hot" id="f1btn">Lock in <span class="emoji">⚡</span></span></div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43">d=0.65</div><div class="lab" data-at="3.62"><b>if-then プランの効果量</b><small>94研究のメタ分析。ADHDの子どもでも衝動の抑制が改善<br>Gollwitzer &amp; Sheeran 2006 / Gawrilow 2008</small></div></div>
+</section>
+
+<section class="scene feature" id="f2">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 02</div>
+  <h2 class="ftitle display" data-slam="0.10">「今、集中<br>してた？」</h2>
+  <div class="fsub" data-at="0.45">ランダムに聞かれて、脱線に気づく。<br>気づけたら勝ち。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div class="hud glass">
+      <div class="cap"></div>
+      <div class="row"><div class="dot"></div><div class="task">決済フローのQA</div><span class="badge" id="f2badge">🔥2</span><div class="timer" id="f2timer">18:42</div></div>
+      <div class="step">○ ケース4：クーポン適用後の金額<span class="count">4/12</span></div>
+      <div class="box" id="f2box"><div class="q">今、この作業に注意が向いてた？</div><span class="btn" id="f2yes">はい ⌃⌥Y</span><span class="btn">いいえ ⌃⌥N</span></div>
+      <div class="flashmsg" id="f2flash"><span class="emoji">🔥</span> 3コンボ！ 集中キープ</div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43">41研究</div><div class="lab" data-at="3.62"><b>自己モニタリングでADHDの集中行動が改善</b><small>Bruhn et al. 2015　※主に子ども・学生の研究</small></div></div>
+</section>
+
+<section class="scene feature" id="f3">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 03</div>
+  <h2 class="ftitle display" data-slam="0.10">調べたい？<br>駐車場へ。</h2>
+  <div class="fsub" data-at="0.45">⌃⌥M で書いて、即戻る。<br>続きは休憩でまとめて。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div>
+      <div class="keys"><div class="key" data-key="0.64">⌃</div><div class="key" data-key="0.75">⌥</div><div class="key" data-key="0.86">M</div></div>
+      <div class="capture glass" data-at="1.0">
+        <div class="h"><span class="emoji">📥</span> 駐車場メモ — 後で見る</div>
+        <div class="field"><div class="v" data-type="1.3" data-text="Vitest のモック設定を調べる"></div></div>
+        <div class="toast" data-at="2.9">駐車場に置いた（3件）。続きは休憩で</div>
+      </div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43">RCT</div><div class="lab" data-at="3.62"><b>成人ADHDの認知行動療法で効果が示された技法</b><small>Distractibility delay — Safren et al. 2005, 2010</small></div></div>
+</section>
+
+<section class="scene feature" id="f4">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 04</div>
+  <h2 class="ftitle display" data-slam="0.10">開く前に、<br>ひと呼吸。</h2>
+  <div class="fsub" data-at="0.45">5秒の間と「やめる」ボタン。<br>禁止はしない。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div class="friction glass">
+      <h3 class="display">ひと呼吸おこう</h3>
+      <div class="src">「youtube.com」を開いています</div>
+      <div class="goal">今やると決めたのは<b>決済フローのQA</b></div>
+      <div class="ring"><svg width="170" height="170"><circle cx="85" cy="85" r="72" stroke="rgba(255,255,255,0.15)" stroke-width="12" fill="none"/><circle id="f4ring" cx="85" cy="85" r="72" stroke="#FF3A9D" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="452.4" stroke-dashoffset="0"/></svg><div class="n" id="f4n">5</div></div>
+      <div><span class="btn" id="f4back">作業に戻る</span><span class="btn">メモして戻る</span><span class="btn off" id="f4allow">5分だけ使う</span></div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43">−57%</div><div class="lab" data-at="3.62"><b>対象アプリを開く回数（6週間後）</b><small>短い待ち＋「やめる」選択肢 — Grüning et al., PNAS 2023</small></div></div>
+</section>
+
+<section class="scene feature" id="f5">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 05</div>
+  <h2 class="ftitle display" data-slam="0.10">待ち時間を、<br>観察タイムに。</h2>
+  <div class="fsub" data-at="0.45">Claude 実行中は確認クイズ。<br>終わったら即お知らせ。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div>
+      <div class="term" id="f5term"></div>
+      <div class="hud glass claudebox" id="f5box">
+        <div class="row"><span class="emoji" style="font-size:30px" id="f5icon">⚙️</span><div class="task" id="f5title" style="font-size:30px">Claude 実行中</div><div class="timer" style="font-size:28px;color:var(--muted)" id="f5time">02:14</div></div>
+        <div style="font-size:28px;margin-top:12px" id="f5prompt"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43"><span class="emoji">👀</span></div><div class="lab" data-at="3.62"><b>ゆっくりした課題でADHDの成績は落ちやすい</b><small>メタ分析 — Metin et al. 2012　※この使い方の効果は記録で自分で検証</small></div></div>
+</section>
+
+<section class="scene feature" id="f6">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 06</div>
+  <h2 class="ftitle display" data-slam="0.10">区切って、<br>休む。<span class="emoji">🍅</span></h2>
+  <div class="fsub" data-at="0.45">ポモドーロもワンタップ。<br>ブロッククリアで紙吹雪。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div>
+      <div class="timerbig"><svg width="440" height="440"><circle cx="220" cy="220" r="196" stroke="rgba(255,255,255,0.12)" stroke-width="24" fill="none"/><circle id="f6ring" cx="220" cy="220" r="196" stroke="url(#g6)" stroke-width="24" fill="none" stroke-linecap="round" stroke-dasharray="1231.5" stroke-dashoffset="0"/><defs><linearGradient id="g6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF3A9D"/><stop offset="0.5" stop-color="#9B5CFF"/><stop offset="1" stop-color="#18C8FF"/></linearGradient></defs></svg>
+        <div class="t"><b id="f6time">25:00</b><span style="font-size:28px;color:var(--muted)" id="f6label">集中ブロック</span></div></div>
+      <div class="tomatoes" id="f6tom"></div>
+      <div class="noise glass" data-at="1.8"><span style="font-size:28px;font-weight:800">ピンクノイズ ON</span><div class="bars" id="f6bars"></div></div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43">g=0.25</div><div class="lab" data-at="3.62"><b>ピンク/白ノイズの効果（ADHD傾向の人）</b><small>Nigg et al. 2024　※個人差あり ／ 決めた間隔の休憩: Biwer et al. 2023</small></div></div>
+</section>
+
+<section class="scene feature" id="f7">
+  <div class="buff display" data-slam="0.0" data-from="1.4" data-rot="-3" data-rest="-3">集中バフ 07</div>
+  <h2 class="ftitle display" data-slam="0.10">自分専用に、<br>進化する。</h2>
+  <div class="fsub" data-at="0.45">集中が続く時間を測って、<br>ブロックの長さを自動提案。</div>
+  <div class="right" data-at="0.43" data-dx="120">
+    <div class="chart glass">
+      <h4>脱線するまでの時間</h4>
+      <div class="bars" id="f7bars">
+        <div class="b" data-h="0.30"></div><div class="b" data-h="0.55"></div><div class="b" data-h="0.85"></div><div class="b" data-h="1.0"></div>
+        <div class="b" data-h="0.75"></div><div class="b" data-h="0.45"></div><div class="b" data-h="0.25"></div><div class="b" data-h="0.15"></div>
+        <div class="median" id="f7med" style="left:43%"><span>中央値 17分</span></div>
+      </div>
+      <div class="axis"><span>5分</span><span>15分</span><span>25分</span><span>35分</span></div>
+      <div class="reco" data-at="2.4">次回のおすすめブロック → 15分</div>
+      <div class="note">（表示例）</div>
+    </div>
+  </div>
+  <div class="sticker"><div class="big" data-pop="3.43">15分</div><div class="lab" data-at="3.62"><b>あなた専用のおすすめブロック</b><small>集中持続に合わせてタイマーを設定する — 成人ADHDのCBT（Safren et al.）</small></div></div>
+</section>
+
+<!-- vows: 3 bars -->
+<section class="scene" id="vows">
+  <div class="mega display" data-slam="0.05" data-until="1.66">責めない。</div>
+  <div class="mega display" data-slam="1.71" data-until="3.38" data-rot="6">罰ゼロ。</div>
+  <div class="mega sm display grad" data-slam="3.43" data-rot="-4" data-from="1.8">データは、Mac から出ない。</div>
+  <div class="disclaimer" data-at="3.8">※ Rokkin は医療機器ではありません。治療の代わりではなく、日々の作業の補助ツールです。</div>
+</section>
+
+<!-- outro: 3 bars -->
+<section class="scene" id="outro">
+  <div class="center" style="padding-bottom:80px">
+    <img class="bigicon" id="outroIcon" src="icon.png" alt="" style="width:250px;height:250px">
+    <div class="title-xl display grad" data-slam="0.43" style="font-size:150px">Rokkin</div>
+    <div class="tagline display" data-slam="0.86" data-from="1.8" style="font-size:72px">Lock in. <span class="emoji">⚡</span></div>
+    <div class="tagline" data-at="1.5" style="font-size:32px;color:var(--muted);margin-top:14px">無料・オープンソース ／ macOS 13 以降</div>
+    <div class="url" data-at="1.9">79yuuki.github.io/rokkin</div>
+  </div>
+</section>
+
+<div class="combo display" id="combo"><span class="emoji">🔥</span>COMBO <span class="x" id="comboN">×1</span></div>
+<div class="brandmark" id="brand"><img src="icon.png" alt=""><span class="display">Rokkin</span></div>
+<div class="ticker" id="ticker"><div class="track" id="tickerTrack"></div></div>
+</div>
+<div id="flash"></div>
+<div class="progress" id="progress"></div>
+
+<script src="shader.js"></script>
+<script>
+const B = 60 / 140, BAR = 4 * B;
+const SCENES = [['intro', 2], ['hook', 4], ['idea', 2], ['f1', 4], ['f2', 4], ['f3', 4], ['f4', 4], ['f5', 4], ['f6', 4], ['f7', 4], ['vows', 3], ['outro', 3]];
+let acc = 0;
+const TL = SCENES.map(([id, bars]) => { const s = { id, dur: bars * BAR, start: acc, el: document.getElementById(id) }; acc += bars * BAR; return s; });
+const TOTAL = acc;
+window.TIMELINE = TL.map(s => ({ id: s.id, start: s.start, dur: s.dur }));
+window.TOTAL = TOTAL;
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = x => 1 - Math.pow(1 - clamp(x), 3);
+const back = x => { x = clamp(x); const c1 = 2.2, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const lerp = (a, b, p) => a + (b - a) * p;
+
+function untilFade(el, lt) {
+  if (!el.dataset.until) return 1;
+  const u = +el.dataset.until;
+  return lt < u ? 1 : clamp(1 - (lt - u) / 0.08);
+}
+function appear(el, lt) {
+  const at = +el.dataset.at, d = 0.35;
+  const p = ease((lt - at) / d);
+  const dx = el.dataset.dx ? +el.dataset.dx : 0, dy = dx ? 0 : 28;
+  el.style.opacity = p * untilFade(el, lt);
+  el.style.transform = `translate(${dx * (1 - p)}px, ${dy * (1 - p)}px)`;
+}
+function slam(el, lt) {
+  const at = +el.dataset.slam;
+  if (lt < at) { el.style.opacity = 0; return; }
+  const x = (lt - at) / 0.26;
+  const from = el.dataset.from ? +el.dataset.from : 2.3;
+  const rot0 = el.dataset.rot ? +el.dataset.rot : -7;
+  const rest = el.dataset.rest ? +el.dataset.rest : 0;
+  const sc = lerp(from, 1, back(x));
+  const rot = lerp(rot0, rest, ease(x));
+  const blur = Math.max(0, 10 * (1 - x * 1.4));
+  const ab = Math.max(0, 1 - (lt - at) / 0.5) * 9;
+  const base = el.classList.contains('mega') ? 'translateY(0)' : '';
+  el.style.opacity = clamp(x * 3) * untilFade(el, lt);
+  el.style.transform = `${base} scale(${sc}) rotate(${rot}deg)`;
+  el.style.filter = blur > 0.2 ? `blur(${blur}px)` : 'none';
+  if (!el.classList.contains('grad') && !el.classList.contains('buff')) {
+    el.style.textShadow = `${-ab}px 0 rgba(255,58,157,0.9), ${ab}px 0 rgba(24,200,255,0.9), 0 8px 40px rgba(5,2,20,0.7)`;
+  }
+}
+function pop(el, lt, beatPulse) {
+  const at = +el.dataset.pop;
+  if (lt < at) { el.style.opacity = 0; return; }
+  const x = (lt - at) / 0.32;
+  const sc = lerp(0.2, 1, back(x)) * (1 + 0.025 * beatPulse);
+  el.style.opacity = clamp(x * 4) * untilFade(el, lt);
+  el.style.transform = `scale(${sc}) rotate(${lerp(-18, -4, ease(x))}deg)`;
+}
+function typeInto(el, lt, at, cps) {
+  const text = el.dataset.text;
+  const n = clamp(Math.floor((lt - at) * cps), 0, text.length);
+  const typing = lt >= at && n < text.length;
+  el.innerHTML = text.slice(0, n) + (typing ? '<span class="caret"></span>' : '');
+}
+
+const fx = RokkinShader(document.getElementById('gl'), { preserve: true });
+const tickerText = 'LOCK IN ⚡ 研究ベース ⚡ 責めない ⚡ Claude Code 対応 ⚡ ポモドーロ ⚡ 無料・オープンソース ⚡ ';
+document.getElementById('tickerTrack').textContent = tickerText.repeat(6);
+let tickerSeg = 0;
+
+const custom = {
+  intro(lt, s, bp) {
+    const icon = document.getElementById('introIcon');
+    icon.style.opacity = clamp(lt / 0.15);
+    icon.style.transform = `scale(${lerp(0.2, 1, back(lt / 0.4)) * (1 + 0.04 * bp)}) rotate(${-6 + Math.sin(lt * 7.3) * 3}deg)`;
+  },
+  f1(lt, s) {
+    s.el.querySelectorAll('[data-type]').forEach(v => typeInto(v, lt, +v.dataset.type, 24));
+    const b = document.getElementById('f1btn');
+    const on = lt > 3.1;
+    b.style.transform = `scale(${on ? 1 + 0.1 * Math.exp(-(lt - 3.1) * 5) : 1})`;
+    b.style.opacity = on ? 1 : 0.4;
+  },
+  f2(lt) {
+    const sec = 18 * 60 + 42 - Math.floor(lt);
+    document.getElementById('f2timer').textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+    const box = document.getElementById('f2box'), yes = document.getElementById('f2yes'), fl = document.getElementById('f2flash');
+    const ask = 0.9, press = 2.15, swap = 2.5;
+    box.style.display = lt > swap ? 'none' : 'block';
+    box.style.opacity = lt < ask ? 0 : ease((lt - ask) / 0.2);
+    box.style.transform = `scale(${lt < ask + 0.25 ? lerp(0.85, 1, back((lt - ask) / 0.25)) : 1})`;
+    yes.className = 'btn' + (lt > press ? ' hot' : '');
+    fl.style.display = lt > swap ? 'block' : 'none';
+    fl.style.transform = `scale(${lt > swap ? lerp(0.6, 1, back((lt - swap) / 0.25)) : 1})`;
+    document.getElementById('f2badge').textContent = lt > swap ? '🔥3' : '🔥2';
+  },
+  f3(lt, s) {
+    s.el.querySelectorAll('[data-key]').forEach(k => {
+      const at = +k.dataset.key;
+      const down = lt > at && lt < at + 0.4;
+      k.style.opacity = ease((lt - 0.45) / 0.2);
+      k.style.transform = `translateY(${down ? 10 : 0}px)`;
+      k.style.boxShadow = down ? '0 2px 0 rgba(0,0,0,0.35), 0 0 40px rgba(255,58,157,0.8)' : '0 12px 0 rgba(0,0,0,0.35)';
+      k.style.borderColor = down ? '#FF3A9D' : 'rgba(255,255,255,0.25)';
+    });
+    s.el.querySelectorAll('[data-type]').forEach(v => typeInto(v, lt, +v.dataset.type, 20));
+  },
+  f4(lt) {
+    const start = 0.7, secs = 2.4;
+    const left = clamp(1 - (lt - start) / secs, 0, 1) * 5;
+    document.getElementById('f4n').textContent = lt < start ? '5' : (left > 0.001 ? Math.ceil(left) : '…');
+    document.getElementById('f4ring').setAttribute('stroke-dashoffset', String(452.4 * (1 - left / 5)));
+    document.getElementById('f4allow').className = 'btn' + (left > 0.001 ? ' off' : '');
+    document.getElementById('f4back').className = 'btn' + (lt > 3.2 ? ' hot' : '');
+  },
+  f5(lt) {
+    const lines = ['<span class="p">claude</span> &gt; QAケース4〜6をブラウザで確認して', '● ケース4：クーポン適用を確認中…', '  ↳ クリック #apply-coupon', '  ↳ スクリーンショットを保存', '● ケース5：金額表示を確認中…'];
+    const shown = clamp(Math.floor((lt - 0.5) / 0.42) + 1, 0, lines.length);
+    const done = lt > 4.6;
+    document.getElementById('f5term').innerHTML = lines.slice(0, shown).join('<br>') + (done ? '<br>✓ 完了' : '<br><span class="caret"></span>');
+    const sec = 2 * 60 + 14 + Math.floor(lt * 3);
+    document.getElementById('f5time').textContent = done ? '00:01' : `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+    document.getElementById('f5icon').textContent = done ? '✅' : '⚙️';
+    document.getElementById('f5title').textContent = done ? 'Claude 完了！ 結果を見よう' : 'Claude 実行中';
+    const prompts = ['今の操作、QAケースの手順と一致してる？', '次に Claude が何をするか予想してみよう'];
+    const pr = document.getElementById('f5prompt');
+    pr.innerHTML = done ? '<span class="emoji">🔔</span> ピンポン！ 画面に戻ろう' : '<span class="emoji">👀</span> ' + prompts[lt < 2.6 ? 0 : 1];
+    const box = document.getElementById('f5box');
+    const blink = done ? 0.5 + 0.5 * Math.abs(Math.sin((lt - 4.6) * 7)) : 0;
+    box.style.background = done ? `rgba(40, 200, 120, ${0.22 + 0.25 * blink})` : 'rgba(155, 92, 255, 0.26)';
+    box.style.boxShadow = done ? `0 0 ${30 + 40 * blink}px rgba(40,200,120,0.55)` : '0 30px 90px rgba(0,0,0,0.5)';
+  },
+  f6(lt) {
+    const ff = clamp((lt - 0.5) / 2.2);
+    const remain = 25 * 60 * (1 - ff);
+    const onBreak = ff >= 1;
+    document.getElementById('f6time').textContent = onBreak ? 'CLEAR' : `${Math.floor(remain / 60)}:${String(Math.floor(remain % 60)).padStart(2, '0')}`;
+    document.getElementById('f6label').textContent = onBreak ? 'ブロッククリア 🏆' : '集中ブロック';
+    document.getElementById('f6ring').setAttribute('stroke-dashoffset', String(1231.5 * (onBreak ? 0 : ff)));
+    const tom = onBreak ? 4 : 3;
+    document.getElementById('f6tom').innerHTML = '<span class="emoji">' + '🍅'.repeat(tom) + '</span>' + '<span style="opacity:.35">' + '・'.repeat(4 - tom) + '</span>';
+    const bars = document.getElementById('f6bars');
+    if (!bars.children.length) for (let i = 0; i < 16; i++) bars.appendChild(document.createElement('i'));
+    [...bars.children].forEach((b, i) => { b.style.height = (10 + 40 * Math.abs(Math.sin(lt * 4.1 + i * 0.9) * Math.sin(lt * 2.3 + i * 0.37))) + 'px'; });
+  },
+  f7(lt, s) {
+    s.el.querySelectorAll('#f7bars .b').forEach((b, i) => { b.style.height = (250 * +b.dataset.h * ease((lt - 0.7 - i * 0.07) / 0.35)) + 'px'; });
+    document.getElementById('f7med').style.opacity = ease((lt - 1.6) / 0.2);
+  },
+  outro(lt, s, bp) {
+    const icon = document.getElementById('outroIcon');
+    icon.style.opacity = clamp(lt / 0.15);
+    icon.style.transform = `scale(${lerp(0.2, 1, back(lt / 0.4)) * (1 + 0.04 * bp)}) rotate(${-5 + Math.sin(lt * 7.3) * 3}deg)`;
+  },
+};
+
+// flash moments: every scene cut (strong) + each big slam inside hook / idea / vows (softer)
+const FLASHES = [];
+TL.forEach(s => { if (s.start > 0) FLASHES.push([s.start, 0.55]); });
+[['hook', [1.71, 3.43, 5.14]], ['idea', [1.71]], ['vows', [1.71, 3.43]], ['outro', [0.86]]].forEach(([id, ts]) => {
+  const s = TL.find(x => x.id === id); ts.forEach(t => FLASHES.push([s.start + t, 0.32]));
+});
+
+window.renderAt = function (t) {
+  t = clamp(t, 0, TOTAL - 1e-6);
+  let cur = TL[TL.length - 1];
+  for (const s of TL) if (t >= s.start && t < s.start + s.dur) { cur = s; break; }
+  const beatPhase = (t % B) / B;
+  const bp = Math.exp(-beatPhase * 7);
+  for (const s of TL) {
+    if (s !== cur) { s.el.style.opacity = 0; continue; }
+    const lt = t - s.start;
+    s.el.style.opacity = clamp(lt / 0.06) * clamp((s.dur - lt) / 0.08);
+    s.el.querySelectorAll('[data-at]').forEach(el => appear(el, lt));
+    s.el.querySelectorAll('[data-slam]').forEach(el => slam(el, lt));
+    s.el.querySelectorAll('[data-pop]').forEach(el => pop(el, lt, bp));
+    if (custom[s.id]) custom[s.id](lt, s, bp);
+  }
+  const feat = cur.id.startsWith('f');
+  const lt = t - cur.start;
+  // stage pulse on the beat
+  document.getElementById('stage').style.transform = `scale(${1 + 0.008 * bp})`;
+  // combo counter
+  const combo = document.getElementById('combo');
+  combo.style.opacity = feat ? 1 : 0;
+  if (feat) {
+    document.getElementById('comboN').textContent = '×' + cur.id.slice(1);
+    const x = lt / 0.3;
+    combo.style.transform = `scale(${lerp(1.6, 1, back(x))})`;
+  }
+  // ticker
+  const ticker = document.getElementById('ticker');
+  const showTicker = feat || cur.id === 'outro';
+  ticker.style.opacity = showTicker ? 1 : 0;
+  if (!tickerSeg) tickerSeg = document.getElementById('tickerTrack').scrollWidth / 6;
+  document.getElementById('tickerTrack').style.transform = `translateX(${-((t * 160) % tickerSeg)}px)`;
+  // flash
+  let fl = 0;
+  for (const [ft, amp] of FLASHES) { const d = t - ft; if (d >= 0 && d < 0.3) fl = Math.max(fl, amp * Math.exp(-d / 0.07)); }
+  document.getElementById('flash').style.opacity = fl;
+  const energy = feat ? 0.85 : 1.05;
+  if (fx) fx.draw(t * 1.6 + 20.0, { energy, beat: bp * 0.9, grain: 0.0, mouse: [Math.sin(t * 0.5) * 0.6, Math.cos(t * 0.37) * 0.3] });
+  document.getElementById('brand').style.opacity = (cur.id === 'intro' || cur.id === 'outro') ? 0 : 0.9;
+  document.getElementById('progress').style.width = (100 * t / TOTAL) + '%';
+};
+document.fonts.ready.then(() => { window.fontsReady = true; });
+renderAt(0);
+</script>
+</body>
+</html>

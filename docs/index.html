@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rokkin（ロッキン）— 脱線しても、秒で戻る。</title>
+<meta name="description" content="ADHDの「気づいたらスマホ」を、研究で効果が示された7つの集中バフで止める Mac のメニューバーアプリ。Claude Code 対応。無料・オープンソース。">
+<meta property="og:title" content="Rokkin — 脱線しても、秒で戻る。">
+<meta property="og:description" content="研究ベースの7つの集中バフで、ADHDの脱線を秒で戻す Mac アプリ。72秒の解説動画あり。">
+<meta property="og:image" content="https://79yuuki.github.io/rokkin/assets/og.jpg">
+<meta property="og:url" content="https://79yuuki.github.io/rokkin/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0A0620">
+<link rel="icon" type="image/png" href="assets/favicon-64.png">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0A0620;
+    --ink-2: #140C33;
+    --pink: #FF3A9D;
+    --violet: #8B5CFF;
+    --cyan: #18C8FF;
+    --bolt: #FFD200;
+    --paper: #F3EEFF;
+    --haze: #B9AEDB;
+    --rim: linear-gradient(120deg, #FF3A9D, #8B5CFF 50%, #18C8FF);
+    --display: "Dela Gothic One", "Hiragino Sans", sans-serif;
+    --body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Hiragino Sans", sans-serif;
+    --measure: 38em;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { overflow-x: clip; }
+  body { margin: 0; background: var(--ink); color: var(--paper); font-family: var(--body); font-size: 17px; line-height: 1.85;
+         -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  a { color: var(--cyan); text-underline-offset: 3px; }
+  a:hover { color: #7fe1ff; }
+  :focus-visible { outline: 3px solid var(--bolt); outline-offset: 3px; border-radius: 6px; }
+  img { max-width: 100%; height: auto; display: block; }
+  h1, h2, h3 { word-break: auto-phrase; text-wrap: balance; }
+  .nw { white-space: nowrap; }
+
+  /* shader stage */
+  #fx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -2; display: block; }
+  .veil { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+          background: radial-gradient(120% 90% at 30% 20%, rgba(10,6,32,0.15), rgba(10,6,32,0.72) 70%); transition: background .6s; }
+  body.reading .veil { background: rgba(10,6,32,0.80); }
+
+  .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+  /* top bar */
+  .bar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); background: rgba(10,6,32,0.45); border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .bar .wrap { display: flex; align-items: center; gap: 14px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--paper); text-decoration: none; font-family: var(--display); font-size: 22px; }
+  .brand img { width: 34px; height: 34px; }
+  .bar nav { margin-left: auto; display: flex; gap: 18px; align-items: center; font-size: 15px; }
+  .bar nav a { color: var(--haze); text-decoration: none; }
+  .bar nav a:hover { color: var(--paper); }
+  .motion { font: inherit; font-size: 14px; color: var(--haze); background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .motion:hover { color: var(--paper); border-color: rgba(255,255,255,0.4); }
+
+  /* hero */
+  .hero { min-height: calc(100vh - 60px); display: grid; grid-template-columns: 1.35fr 1fr; align-items: center; gap: 40px; padding: 60px 0 40px; }
+  .hero h1 { font-family: var(--display); font-weight: 400; font-size: clamp(46px, 7.2vw, 104px); line-height: 1.08; margin: 0;
+             letter-spacing: 0.01em; text-shadow: 0 0 40px rgba(255,58,157,0.35), 0 4px 30px rgba(10,6,32,0.6); }
+  .hero .lede { max-width: 30em; font-size: clamp(17px, 1.6vw, 20px); color: var(--paper); margin: 28px 0 32px; }
+  .hero .lede b { font-weight: 800; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; font-family: var(--body); font-weight: 800; font-size: 17px; text-decoration: none;
+         padding: 15px 26px; border-radius: 999px; border: 0; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+  .btn-primary { color: #fff; background: var(--pink); box-shadow: 0 10px 34px rgba(255,58,157,0.45); }
+  .btn-primary:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255,58,157,0.6); }
+  .btn-ghost { color: var(--paper); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.22); }
+  .btn-ghost:hover { color: var(--paper); background: rgba(255,255,255,0.14); }
+  .fine { margin-top: 18px; font-size: 14px; color: var(--haze); }
+  .sticker { justify-self: center; position: relative; width: min(380px, 80%); aspect-ratio: 1; transform: rotate(-7deg); }
+  .sticker img { width: 100%; filter: drop-shadow(0 40px 70px rgba(255,58,157,0.4)); }
+  .sticker span { position: absolute; right: -8%; bottom: 6%; font-family: var(--display); font-size: clamp(22px, 2.6vw, 34px);
+                  background: var(--bolt); color: var(--ink); padding: 6px 18px; border-radius: 12px; transform: rotate(9deg);
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+
+  /* ticker band */
+  .ticker { position: relative; overflow: hidden; height: 58px; background: var(--rim); transform: rotate(-1.4deg) scaleX(1.04); margin: 10px 0 70px; box-shadow: 0 14px 40px rgba(0,0,0,0.35); }
+  .ticker .track { position: absolute; top: 0; left: 0; height: 58px; display: flex; align-items: center; white-space: nowrap; font-family: var(--display); font-size: 26px; line-height: 1; color: #12062a;
+                   animation: tick 28s linear infinite; }
+  .ticker .track span { display: block; padding-right: 0.4em; line-height: 1; }
+  @keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  body.still .ticker .track { animation-play-state: paused; }
+
+  /* stat stickers */
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin: 0 0 30px; list-style: none; padding: 0; }
+  .stat .big { display: inline-block; font-family: var(--display); font-size: clamp(34px, 4vw, 58px); line-height: 1; color: #12062a; background: var(--bolt);
+               padding: 12px 20px 16px; border-radius: 18px; box-shadow: 0 10px 0 rgba(0,0,0,0.35), 0 0 40px rgba(255,210,0,0.25); transform: rotate(-3deg); }
+  .stat:nth-child(2n) .big { transform: rotate(2.5deg); }
+  .stat p { margin: 16px 0 0; font-size: 15px; line-height: 1.6; color: var(--paper); }
+  .stat p small { display: block; color: var(--haze); font-size: 13px; }
+  .track .badge { display: inline-block; margin-top: 12px; font-family: var(--display); font-size: 22px; color: #12062a; background: var(--bolt);
+                  padding: 4px 12px 6px; border-radius: 10px; transform: rotate(-3deg); }
+
+  /* the stage (video) */
+  .stage { padding: 30px 0 90px; }
+  .stage h2, .section h2 { font-family: var(--display); font-weight: 400; font-size: clamp(32px, 4.4vw, 56px); line-height: 1.2; margin: 0 0 14px; }
+  .stage p.sub, .section p.sub { color: var(--haze); margin: 0 0 30px; max-width: var(--measure); }
+  .screen { position: relative; border-radius: 26px; padding: 3px; background: var(--rim); box-shadow: 0 0 80px rgba(139,92,255,0.35), 0 40px 120px rgba(0,0,0,0.5); }
+  .screen video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 23px; background: var(--ink); }
+  .play { position: absolute; inset: 3px; border-radius: 23px; border: 0; cursor: pointer; display: grid; place-items: center;
+          background: linear-gradient(0deg, rgba(10,6,32,0.55), rgba(10,6,32,0.1)); color: var(--paper); font: inherit; }
+  .play .disc { display: flex; align-items: center; gap: 14px; padding: 18px 30px 18px 22px; border-radius: 999px; background: var(--pink);
+                font-weight: 800; font-size: clamp(16px, 1.8vw, 22px); box-shadow: 0 14px 50px rgba(255,58,157,0.6); }
+  .play .disc svg { width: 30px; height: 30px; }
+  .play:hover .disc { transform: scale(1.04); }
+  .play[hidden] { display: none; }
+  .chapters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chapters button { font: inherit; font-size: 14px; color: var(--haze); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+                     border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .chapters button:hover { color: var(--paper); border-color: rgba(255,255,255,0.35); }
+  .chapters button[aria-current="true"] { color: var(--ink); background: var(--cyan); border-color: var(--cyan); }
+
+  /* sections */
+  .section { padding: 90px 0; }
+  .panel { background: rgba(14, 8, 38, 0.78); border: 1px solid rgba(255,255,255,0.09); border-radius: 32px; padding: clamp(28px, 5vw, 64px); backdrop-filter: blur(16px); }
+
+  /* the seven mechanisms */
+  .tracks { list-style: none; margin: 10px 0 0; padding: 0; counter-reset: track; }
+  .track { display: grid; grid-template-columns: 110px 1fr 1.25fr; gap: 28px; padding: 34px 0; border-top: 1px solid rgba(255,255,255,0.10); }
+  .track:last-child { border-bottom: 1px solid rgba(255,255,255,0.10); }
+  .track .no { font-family: var(--display); font-size: 56px; line-height: 1; background: var(--rim); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .track h3 { font-family: var(--display); font-weight: 400; font-size: clamp(22px, 2.3vw, 30px); line-height: 1.35; margin: 0 0 12px; }
+  .track .jump { font: inherit; font-size: 14px; color: var(--cyan); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .track p { margin: 0 0 14px; max-width: var(--measure); }
+  .track .cite { font-size: 14px; line-height: 1.7; color: var(--haze); padding-left: 14px; border-left: 3px solid var(--violet); }
+  .track .cite b { color: var(--paper); font-weight: 700; }
+
+  /* claude */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .duo img { border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 30px 80px rgba(0,0,0,0.45); }
+  .duo ul { padding-left: 1.2em; margin: 0; }
+  .duo li { margin-bottom: 10px; }
+
+  /* install */
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; }
+  .steps li { display: grid; grid-template-columns: 54px 1fr; gap: 18px; align-items: start; }
+  .steps .n { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-family: var(--display); font-size: 24px;
+              background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); }
+  .steps h3 { margin: 4px 0 8px; font-size: 19px; font-weight: 800; }
+  pre { margin: 0; padding: 16px 18px; border-radius: 14px; background: #07041A; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 14.5px; line-height: 1.7; color: #DCD4FF; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 6px; }
+  pre code { background: none; padding: 0; }
+  .keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 30px; }
+  .keys div { padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+  kbd { font-family: var(--body); font-weight: 800; font-size: 15px; padding: 2px 8px; border-radius: 7px; background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.22); border-bottom-width: 3px; margin-right: 8px; }
+
+  /* principles */
+  .vows { font-family: var(--display); font-size: clamp(28px, 4vw, 52px); line-height: 1.35; margin: 0; padding: 0; list-style: none; }
+  .vows li { margin: 0 0 10px; }
+  .disclaimer { margin-top: 30px; color: var(--haze); font-size: 15px; max-width: var(--measure); }
+
+  .refs { font-size: 14px; color: var(--haze); line-height: 1.7; padding-left: 1.2em; }
+  .refs li { margin-bottom: 8px; }
+  footer { padding: 50px 0 70px; color: var(--haze); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+  footer .brand { font-size: 18px; }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 40px; }
+    .sticker { order: -1; width: 180px; justify-self: start; }
+    .sticker span { font-size: 18px; }
+    .track { grid-template-columns: 1fr; gap: 10px; }
+    .track .no { font-size: 40px; }
+    .duo { grid-template-columns: 1fr; }
+    .bar nav a.hide-sm { display: none; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 16px; }
+    .stat .big { font-size: 30px; padding: 10px 14px 12px; }
+    .chapters button { font-size: 13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn, .play .disc { transition: none; }
+    .ticker .track { animation: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/icon-512.png" alt="">Rokkin</a>
+    <nav aria-label="ページ内">
+      <a href="#video" class="hide-sm">動画</a>
+      <a href="#how" class="hide-sm">なぜ効くか</a>
+      <a href="#install">入手する</a>
+      <button class="motion" id="motionToggle" type="button" aria-pressed="false">動きを止める</button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="wrap hero">
+    <div>
+      <h1><span class="nw">脱線しても、</span><br><span class="nw">秒で戻る。</span></h1>
+      <p class="lede"><b>Rokkin（ロッキン）＝ ロックイン。</b>ADHDの「気づいたらスマホ」を、研究で効果が示された7つの集中バフで止める Mac のメニューバーアプリ。Claude Code を回しながらの QA や開発にも対応しています。</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#video">動画を見る（1:12）</a>
+        <a class="btn btn-ghost" href="#install">無料で入手</a>
+      </div>
+      <p class="fine">無料・オープンソース（MIT ライセンス）／ macOS 13 以降</p>
+    </div>
+    <div class="sticker"><img src="assets/icon-512.png" alt="Rokkin のアイコン：稲妻の鍵穴がついた、傾いた南京錠"><span>Lock in. ⚡</span></div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="track"><span>LOCK IN ⚡ 研究ベース ⚡ 責めない ⚡ Claude Code 対応 ⚡ ポモドーロ ⚡ ブロッククリアで紙吹雪 🏆 ⚡ 無料・オープンソース ⚡</span><span>LOCK IN ⚡ 研究ベース ⚡ 責めない ⚡ Claude Code 対応 ⚡ ポモドーロ ⚡ ブロッククリアで紙吹雪 🏆 ⚡ 無料・オープンソース ⚡</span></div></div>
+
+  <section class="wrap stage" id="video" aria-labelledby="video-h">
+    <h2 id="video-h">72秒でわかる、7つの集中バフ</h2>
+    <p class="sub">どんな仕組みで、なぜ効くのか。研究の数字つきで一気に見せます。音楽入りですが、内容は画面の文字だけでわかります。</p>
+    <ul class="stats" aria-label="研究の数字">
+      <li class="stat"><span class="big">d=0.65</span><p>if-then プランの効果量<small>94研究のメタ分析</small></p></li>
+      <li class="stat"><span class="big">41研究</span><p>自己モニタリングでADHDの集中行動が改善<small>主に子ども・学生の研究</small></p></li>
+      <li class="stat"><span class="big">−57%</span><p>アプリを開く回数<small>短い待ち＋「やめる」選択肢、6週間</small></p></li>
+      <li class="stat"><span class="big">g=0.25</span><p>ピンク/白ノイズの効果<small>ADHD傾向の人、個人差あり</small></p></li>
+    </ul>
+    <div class="screen">
+      <video id="explainer" controls playsinline preload="metadata" poster="assets/poster.jpg">
+        <source src="assets/rokkin-explainer.mp4" type="video/mp4">
+        お使いのブラウザでは動画を再生できません。<a href="assets/rokkin-explainer.mp4">MP4 をダウンロード</a>してください。
+      </video>
+      <button class="play" id="playBtn" type="button" aria-label="解説動画を再生（1分12秒）">
+        <span class="disc"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13a1 1 0 0 0 1.5.87l11-6.5a1 1 0 0 0 0-1.74l-11-6.5A1 1 0 0 0 8 5.5Z"/></svg>再生する（1:12）</span>
+      </button>
+    </div>
+    <div class="chapters" id="chapters" aria-label="チャプター">
+      <button type="button" data-t="0">はじめに</button>
+      <button type="button" data-t="13.72">バフ01 決めろ</button>
+      <button type="button" data-t="20.58">バフ02 集中してた？</button>
+      <button type="button" data-t="27.43">バフ03 駐車場</button>
+      <button type="button" data-t="34.29">バフ04 ひと呼吸</button>
+      <button type="button" data-t="41.15">バフ05 Claude 待ち</button>
+      <button type="button" data-t="48.0">バフ06 区切って休む</button>
+      <button type="button" data-t="54.86">バフ07 自分専用</button>
+    </div>
+  </section>
+
+  <section class="wrap section" id="how" aria-labelledby="how-h">
+    <div class="panel">
+      <h2 id="how-h">7つの集中バフと、その根拠</h2>
+      <p class="sub">根性は使いません。「脱線に気づいて戻る」を仕組みにしています。研究の多くは子どもや一般の成人が対象なので、効き方は人それぞれ。アプリの記録画面で、自分に効いているか確かめられます。</p>
+      <ol class="tracks">
+        <li class="track">
+          <div class="no" aria-hidden="true">01</div>
+          <div><h3>始める前に、決めろ。</h3><button class="jump" data-t="13.72" type="button">動画で見る（0:13）</button><br><span class="badge">d=0.65</span></div>
+          <div>
+            <p>やる作業をひとつ、完了の定義、そして「調べたくなったら → メモして戻る」のような if-then プランを書いてから始めます。その場で迷わずに済むので、戻りやすくなります。</p>
+            <p class="cite"><b>if-then プラン（実行意図）</b>：94研究・8000人超のメタ分析で目標達成を後押し（d=0.65）。ADHDの子どもでも反応の抑制や注意の切り替えが改善。Gollwitzer &amp; Sheeran 2006 ／ Gawrilow &amp; Gollwitzer 2008, 2011</p>
+          </div>
+        </li>
+        <li class="track">
+          <div class="no" aria-hidden="true">02</div>
+          <div><h3>「今、集中してた？」</h3><button class="jump" data-t="20.58" type="button">動画で見る（0:20）</button><br><span class="badge">41研究</span></div>
+          <div>
+            <p>ランダムな間隔で小窓が「今、この作業に注意が向いてた？」と聞きます。はいが続けば🔥コンボ。いいえなら何に引っ張られたかを1タップ。「気づけたら勝ち」として、対応する if-then プランを返します。</p>
+            <p class="cite"><b>注意の自己モニタリング</b>：41研究のレビューで、ADHDの子どもの授業中の集中行動が改善。インターバルタイマーで off-task が 46.8% → 27.3% に減った研究も。Bruhn et al. 2015 ／ Sluiter et al. 2019</p>
+          </div>
+        </li>
+        <li class="track">
+          <div class="no" aria-hidden="true">03</div>
+          <div><h3>調べたい？ 駐車場へ。</h3><button class="jump" data-t="27.43" type="button">動画で見る（0:27）</button><br><span class="badge">RCT</span></div>
+          <div>
+            <p><kbd>⌃⌥M</kbd>で思いつきや調べたいことを書き留め、すぐ作業に戻ります。たまったメモは休憩のときにまとめて片付けます。</p>
+            <p class="cite"><b>Distractibility delay</b>：ランダム化比較試験で効果が示された成人ADHDの認知行動療法で使われる技法。Safren et al. 2005, 2010</p>
+          </div>
+        </li>
+        <li class="track">
+          <div class="no" aria-hidden="true">04</div>
+          <div><h3>開く前に、ひと呼吸。</h3><button class="jump" data-t="34.29" type="button">動画で見る（0:34）</button><br><span class="badge">−57%</span></div>
+          <div>
+            <p>決めておいたアプリやサイトを開くと、数秒の待ちと「作業に戻る／メモして戻る／5分だけ使う」の選択肢が出ます。禁止はしません。</p>
+            <p class="cite"><b>セルフナッジ</b>：短い待ちと「やめる」選択肢を挟むアプリで、6週間後に対象アプリを開く回数が57%減。一番効いたのは「やめる」選択肢の提示。Grüning et al., PNAS 2023</p>
+          </div>
+        </li>
+        <li class="track">
+          <div class="no" aria-hidden="true">05</div>
+          <div><h3>待ち時間を、観察タイムに。</h3><button class="jump" data-t="41.15" type="button">動画で見る（0:41）</button></div>
+          <div>
+            <p>Claude Code の hooks で「実行中・完了・入力待ち」を小窓に表示。実行中は「今の操作、QAケースの手順と一致してる？」のような問いを順に出し、ただ眺める時間を確認作業に変えます。終わったら音で呼び戻します。</p>
+            <p class="cite"><b>状態調整モデル</b>：ゆっくりしたペースの課題でADHDの成績が落ちやすい（メタ分析）。Metin et al. 2012。この使い方自体の効果は未検証なので、記録で「Claude実行中」と「それ以外」の集中率を比べられるようにしています。</p>
+          </div>
+        </li>
+        <li class="track">
+          <div class="no" aria-hidden="true">06</div>
+          <div><h3>区切って、休む。🍅</h3><button class="jump" data-t="48.0" type="button">動画で見る（0:48）</button><br><span class="badge">g=0.25</span></div>
+          <div>
+            <p>決めた長さの作業ブロックと短い休憩。ポモドーロモード（25分＋5分、4回ごとに長い休憩）もワンタップ。ブロッククリアの瞬間には紙吹雪 🏆（集中中は出ません）。背景ノイズ（ピンク／ホワイト）は任意です。</p>
+            <p class="cite"><b>決めた間隔の休憩</b>：自分で決めるより疲労・注意散漫が少なかった（Biwer et al. 2023）。<b>背景ノイズ</b>：ADHD傾向の人で小さな改善（g=0.25）、そうでない人では逆効果（Nigg et al. 2024）。</p>
+          </div>
+        </li>
+        <li class="track">
+          <div class="no" aria-hidden="true">07</div>
+          <div><h3>自分専用に、進化する。</h3><button class="jump" data-t="54.86" type="button">動画で見る（0:54）</button></div>
+          <div>
+            <p>各ブロックで最初に「いいえ」が出るまでの時間から、あなたに合うブロックの長さを提案。ノイズあり／なしの集中率も比べられます。データはすべて Mac の中にだけ保存されます。</p>
+            <p class="cite"><b>集中持続に合わせたタイマー</b>：自分の集中が続く時間を測り、それに合わせてタイマーを設定する（成人ADHDの認知行動療法、Safren et al.）。</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="wrap section" id="claude" aria-labelledby="claude-h">
+    <div class="duo">
+      <div>
+        <h2 id="claude-h">Claude Code と、<br><span class="nw">一緒に。</span></h2>
+        <p class="sub">Claude にブラウザ操作で QA をさせながら、画面を見て確認する。そんな作業のために作りました。</p>
+        <ul>
+          <li>設定画面のボタンひとつで <code>~/.claude/settings.json</code> に hooks を追加（元の設定はバックアップ）</li>
+          <li>実行中・完了・入力待ちが小窓に出て、終わったら音で知らせる</li>
+          <li><kbd>⌃⌥O</kbd>の観察メモは、そのまま QA の指摘リストに。Markdown でコピーできる</li>
+          <li>hooks は状態を1行書き込むだけ。ネットワーク通信はしません</li>
+        </ul>
+      </div>
+      <img src="assets/claude-frame.jpg" alt="Claude が実行中で、小窓に「今の操作、QAケースの手順と一致してる？」と表示されている画面" loading="lazy" width="1600" height="900">
+    </div>
+  </section>
+
+  <section class="wrap section" id="install" aria-labelledby="install-h">
+    <div class="panel">
+      <h2 id="install-h">無料で入手</h2>
+      <p class="sub">いまはソースからビルドします。必要なのは macOS 13 以降と、Xcode または Command Line Tools（<code>xcode-select --install</code>）です。</p>
+      <ol class="steps">
+        <li><span class="n" aria-hidden="true">1</span><div><h3>ソースを取ってくる</h3><pre><code>git clone https://github.com/79yuuki/rokkin.git
+cd rokkin</code></pre></div></li>
+        <li><span class="n" aria-hidden="true">2</span><div><h3>ビルドする</h3><pre><code>./scripts/build-app.sh</code></pre><p class="fine">SwiftPM が動かない環境では、自動で swiftc を直接使うビルドに切り替わります。</p></div></li>
+        <li><span class="n" aria-hidden="true">3</span><div><h3>インストールして起動</h3><pre><code>ditto build/Rokkin.app /Applications/Rokkin.app
+open /Applications/Rokkin.app</code></pre></div></li>
+      </ol>
+      <div class="keys" aria-label="ショートカット">
+        <div><kbd>⌃⌥M</kbd>駐車場メモ</div>
+        <div><kbd>⌃⌥O</kbd>観察メモ（QA）</div>
+        <div><kbd>⌃⌥Y</kbd><kbd>⌃⌥N</kbd>自己チェックに回答</div>
+        <div><kbd>⌃⌥H</kbd>小窓の表示切替</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" aria-labelledby="vow-h">
+    <h2 id="vow-h" style="font-family:var(--display);font-weight:400;font-size:clamp(20px,2vw,26px);color:var(--haze);margin:0 0 24px">Rokkin が約束すること</h2>
+    <ul class="vows">
+      <li>責めない。気づけたら勝ち。</li>
+      <li>罰ゼロ。</li>
+      <li>データは、Mac から出ない。</li>
+    </ul>
+    <p class="disclaimer">Rokkin は医療機器ではありません。薬物療法やカウンセリングなどの治療の代わりではなく、日々の作業を補助するツールです。</p>
+  </section>
+
+  <section class="wrap section" aria-labelledby="refs-h" style="padding-top:20px">
+    <h2 id="refs-h" style="font-family:var(--display);font-weight:400;font-size:24px;margin:0 0 16px">参考文献</h2>
+    <ol class="refs">
+      <li>Bruhn, McDaniel &amp; Kreigh (2015). Self-monitoring interventions for students with behavior problems: A systematic review. <i>Behavioral Disorders</i>.</li>
+      <li>Sluiter, Groen, de Jonge &amp; Tucha (2019). Exploring neuropsychological effects of a self-monitoring intervention for ADHD-symptoms in school. <i>Applied Neuropsychology: Child</i>.</li>
+      <li>Gollwitzer &amp; Sheeran (2006). Implementation intentions and goal achievement: A meta-analysis. <i>Advances in Experimental Social Psychology</i>, 38.</li>
+      <li>Gawrilow &amp; Gollwitzer (2008). Implementation intentions facilitate response inhibition in ADHD children. <i>Cognitive Therapy and Research</i>, 32.</li>
+      <li>Gawrilow, Gollwitzer &amp; Oettingen (2011). If-then plans benefit executive functions in children with ADHD. <i>Journal of Social and Clinical Psychology</i>, 30.</li>
+      <li>Safren et al. (2005, 2010). Cognitive-behavioral therapy for adults with ADHD (RCTs) ／ <i>Mastering Your Adult ADHD</i> (2nd ed., 2017).</li>
+      <li>Grüning, Riedel &amp; Lorenz-Spreen (2023). <a href="https://www.pnas.org/doi/10.1073/pnas.2213114120">Directing smartphone use through the self-nudge app one sec</a>. <i>PNAS</i>, 120(8).</li>
+      <li>Metin, Roeyers, Wiersema, van der Meere &amp; Sonuga-Barke (2012). A meta-analytic study of event rate effects on Go/No-Go performance in ADHD. <i>Biological Psychiatry</i>.</li>
+      <li>Biwer, Wiradhany, Oude Egbrink &amp; de Bruin (2023). Understanding effort regulation: Comparing ‘Pomodoro’ breaks and self-regulated breaks. <i>British Journal of Educational Psychology</i>, 93.</li>
+      <li>Nigg et al. (2024). <a href="https://pubmed.ncbi.nlm.nih.gov/38428577/">Do white noise or pink noise help with task performance in youth with ADHD or with elevated attention problems?</a> <i>JAACAP</i>, 63(8).</li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/icon-512.png" alt="">Rokkin</a>
+    <span>MIT License</span>
+    <a href="https://github.com/79yuuki/rokkin">GitHub</a>
+    <span>Made by <a href="https://github.com/79yuuki">79yuuki</a></span>
+  </div>
+</footer>
+
+<script src="assets/shader.js"></script>
+<script>
+(function () {
+  const canvas = document.getElementById('fx');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const toggle = document.getElementById('motionToggle');
+  let fx = null;
+  try { fx = window.RokkinShader(canvas, {}); } catch (e) { fx = null; }
+  let paused = reduce.matches;
+  try { if (localStorage.getItem('rokkin-motion') === 'off') paused = true; } catch (e) {}
+  const mouse = [0.2, 0.1], target = [0.2, 0.1];
+  let last = performance.now(), t = 18.0, scrollE = 1;
+
+  function resize() {
+    const scale = Math.min(window.devicePixelRatio || 1, 1.5) * 0.5; // the flow is soft, so half resolution is plenty
+    canvas.width = Math.max(2, Math.round(innerWidth * scale));
+    canvas.height = Math.max(2, Math.round(innerHeight * scale));
+    if (fx && paused) fx.draw(t, { energy: scrollE, mouse });
+  }
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!paused) t += dt;
+    mouse[0] += (target[0] - mouse[0]) * 0.05; mouse[1] += (target[1] - mouse[1]) * 0.05;
+    const y = window.scrollY / Math.max(1, innerHeight);
+    scrollE = Math.max(0.55, 1 - y * 0.35);
+    if (fx) fx.draw(t, { energy: scrollE, mouse });
+    if (!paused) requestAnimationFrame(frame);
+  }
+  function setPaused(p) {
+    paused = p;
+    toggle.setAttribute('aria-pressed', String(p));
+    toggle.textContent = p ? '動きを再開' : '動きを止める';
+    document.body.classList.toggle('still', p);
+    try { localStorage.setItem('rokkin-motion', p ? 'off' : 'on'); } catch (e) {}
+    if (!p) { last = performance.now(); requestAnimationFrame(frame); } else if (fx) fx.draw(t, { energy: scrollE, mouse });
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('pointermove', e => {
+    const h = innerHeight;
+    target[0] = (e.clientX - innerWidth / 2) / h; target[1] = -(e.clientY - h / 2) / h;
+    if (paused && fx) fx.draw(t, { energy: scrollE, mouse: target });
+  }, { passive: true });
+  toggle.addEventListener('click', () => setPaused(!paused));
+  reduce.addEventListener && reduce.addEventListener('change', e => setPaused(e.matches));
+  resize();
+  setPaused(paused);
+  if (!fx) { canvas.style.background = 'radial-gradient(80% 60% at 30% 20%, #3a1677, #0A0620 70%)'; toggle.hidden = true; }
+
+  // video: play button + chapters
+  const video = document.getElementById('explainer');
+  const playBtn = document.getElementById('playBtn');
+  const chapterBtns = [...document.querySelectorAll('#chapters button')];
+  function startAt(sec) {
+    playBtn.hidden = true;
+    if (!isNaN(sec)) video.currentTime = sec;
+    video.play().catch(() => {});
+  }
+  playBtn.addEventListener('click', () => startAt(NaN));
+  video.addEventListener('play', () => { playBtn.hidden = true; document.body.classList.add('reading'); });
+  video.addEventListener('pause', () => document.body.classList.remove('reading'));
+  video.addEventListener('timeupdate', () => {
+    const now = video.currentTime;
+    let cur = 0;
+    chapterBtns.forEach((b, i) => { if (now >= +b.dataset.t) cur = i; });
+    chapterBtns.forEach((b, i) => b.setAttribute('aria-current', String(i === cur && !video.paused)));
+  });
+  chapterBtns.forEach(b => b.addEventListener('click', () => startAt(+b.dataset.t)));
+  document.querySelectorAll('.jump').forEach(b => b.addEventListener('click', () => {
+    document.getElementById('video').scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+    startAt(+b.dataset.t);
+  }));
+})();
+</script>
+</body>
+</html>
