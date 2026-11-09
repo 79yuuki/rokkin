@@ -14,6 +14,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
     static let shared = WindowManager()
 
     private var hud: KeyablePanel?
+    private var hudHost: NSHostingController<AnyView>?
     private var capture: KeyablePanel?
     private var friction: KeyablePanel?
     private var setup: NSWindow?
@@ -28,6 +29,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
 
     func showHUD() {
         if hud == nil { hud = makeHUD() }
+        refreshHUDSize()
         hud?.orderFrontRegardless()
     }
 
@@ -50,9 +52,10 @@ final class WindowManager: NSObject, NSWindowDelegate {
         panel.becomesKeyOnlyIfNeeded = true
         panel.isReleasedWhenClosed = false
 
-        let host = NSHostingView(rootView: HUDView().environmentObject(AppState.shared))
+        let host = NSHostingController(rootView: AnyView(HUDView().environmentObject(AppState.shared)))
         host.sizingOptions = []
-        panel.contentView = host
+        hudHost = host
+        panel.contentViewController = host
 
         if !panel.setFrameUsingName("RokkinHUD"), let screen = NSScreen.main {
             let f = screen.visibleFrame
@@ -60,6 +63,15 @@ final class WindowManager: NSObject, NSWindowDelegate {
         }
         panel.setFrameAutosaveName("RokkinHUD")
         return panel
+    }
+
+    /// Measures the HUD's SwiftUI content and fits the panel to it (top edge stays put).
+    /// Called whenever the content may have changed size and once a second as a safety net,
+    /// so a check-in box or a message can never be clipped.
+    func refreshHUDSize() {
+        guard let host = hudHost, hud != nil else { return }
+        let fit = host.sizeThatFits(in: CGSize(width: 320, height: 10_000))
+        resizeHUD(to: fit)
     }
 
     /// Resizes the HUD to its SwiftUI content while keeping the top edge in place.
@@ -71,6 +83,10 @@ final class WindowManager: NSObject, NSWindowDelegate {
         let top = frame.maxY
         frame.size = newSize
         frame.origin.y = top - newSize.height
+        // keep it on screen if it grew past the bottom edge
+        if let visible = (panel.screen ?? NSScreen.main)?.visibleFrame, frame.minY < visible.minY {
+            frame.origin.y = visible.minY
+        }
         panel.setFrame(frame, display: true)
     }
 

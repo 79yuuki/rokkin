@@ -168,6 +168,7 @@ final class AppState: ObservableObject {
     func tick() {
         now = Date()
         tickCount += 1
+        WindowManager.shared.refreshHUDSize()
         if let until = flashUntil, now >= until {
             flashMessage = nil
             flashUntil = nil

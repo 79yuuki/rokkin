@@ -46,8 +46,8 @@ struct HUDView: View {
         )
         .fixedSize(horizontal: false, vertical: true)
         .background(GeometryReader { g in Color.clear.preference(key: HUDSizeKey.self, value: g.size) })
-        .onPreferenceChange(HUDSizeKey.self) { size in
-            Task { @MainActor in WindowManager.shared.resizeHUD(to: size) }
+        .onPreferenceChange(HUDSizeKey.self) { _ in
+            Task { @MainActor in WindowManager.shared.refreshHUDSize() }
         }
     }
 
