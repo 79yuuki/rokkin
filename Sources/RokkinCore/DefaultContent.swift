@@ -25,6 +25,18 @@ public enum DefaultContent {
         "スマホ", "調べ物", "SNS・ニュース", "ぼーっと", "別の作業", "その他",
     ]
 
+    /// An if-then plan aimed at the most frequent drift reason, offered on the dashboard.
+    public static func suggestedPlan(for tag: String) -> String? {
+        let plans: [String: String] = [
+            "スマホ": "スマホに手が伸びたら → 置き場所に戻して、小窓のタスク名を声に出して読む",
+            "調べ物": "調べたくなったら → ⌃⌥M でメモして、すぐ画面に戻る",
+            "SNS・ニュース": "SNSやニュースを見たくなったら → ⌃⌥M に書いて、休憩まで取っておく",
+            "ぼーっと": "手が止まったら → 次の1手だけを声に出して決める",
+            "別の作業": "別の作業を思い出したら → ⌃⌥M にメモして、今の作業に戻る",
+        ]
+        return plans[tag]
+    }
+
     public static let breakActivities: [String] = [
         "立って肩・背中を伸ばす（30秒）",
         "水を飲む",

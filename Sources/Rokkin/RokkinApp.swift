@@ -51,13 +51,16 @@ struct MenuContent: View {
             Button("セッションを終了してリザルトへ") { state.endSession() }
         } else {
             Button("新しいセッションを始める…  ⌃⌥L") { state.openSetup() }
+            if let week = InsightsBuilder.build(history: state.history, period: .last7).thisWeek, week.sessions > 0 {
+                Text("今週 \(TimeFormat.minutes(week.workedSeconds)) ・ 集中率 \(Rates.percent(week.rate))")
+            }
         }
         Divider()
         Button("駐車場メモ  ⌃⌥M") { state.openCapture(.parking) }
         Button(state.hudVisible ? "小窓を隠す  ⌃⌥H" : "小窓を表示  ⌃⌥H") { state.toggleHUD() }
         Button(state.noisePlaying ? "ノイズを止める" : "ノイズを流す") { state.toggleNoise() }
         Divider()
-        Button("記録…") { WindowManager.shared.showHistory() }
+        Button("ダッシュボード…") { WindowManager.shared.showDashboard() }
         Button("設定…") { WindowManager.shared.showSettings() }
         Divider()
         Button("Rokkin を終了") { NSApp.terminate(nil) }

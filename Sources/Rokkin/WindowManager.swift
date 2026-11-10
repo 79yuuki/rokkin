@@ -21,7 +21,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
     private var breakWindow: NSWindow?
     private var review: NSWindow?
     private var settingsWindow: NSWindow?
-    private var historyWindow: NSWindow?
+    private var dashboardWindow: NSWindow?
 
     var isHUDVisible: Bool { hud?.isVisible ?? false }
 
@@ -212,9 +212,9 @@ final class WindowManager: NSObject, NSWindowDelegate {
         if let w = settingsWindow { present(w) }
     }
 
-    func showHistory() {
-        if historyWindow == nil { historyWindow = makeWindow(title: "Rokkin 記録", content: HistoryView()) }
-        if let w = historyWindow { present(w) }
+    func showDashboard() {
+        if dashboardWindow == nil { dashboardWindow = makeWindow(title: "Rokkin ダッシュボード", content: DashboardView()) }
+        if let w = dashboardWindow { present(w) }
     }
 
     func windowWillClose(_ notification: Notification) {
@@ -223,7 +223,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
         if w === breakWindow { breakWindow = nil }
         if w === review { review = nil }
         if w === settingsWindow { settingsWindow = nil }
-        if w === historyWindow { historyWindow = nil }
+        if w === dashboardWindow { dashboardWindow = nil }
     }
 }
 
